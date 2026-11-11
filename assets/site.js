@@ -4,93 +4,107 @@
 const FORM_ENDPOINT = "";
 const WHATSAPP = "353870365888";
 
-/* ---------- Full enquiry form ---------- */
-document.querySelectorAll(".lead-form").forEach(form => {
-  const msg = form.querySelector(".form-msg");
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    if (form._gotcha && form._gotcha.value) return;
-    let ok = true;
-    form.querySelectorAll("[required]").forEach(f => {
-      const bad = !f.value.trim() || (f.type === "email" && !/^\S+@\S+\.\S+$/.test(f.value));
-      f.classList.toggle("invalid", bad); if (bad) ok = false;
-    });
-    if (!ok) { msg.textContent = "Please fill in the highlighted fields."; msg.className = "form-msg err"; return; }
-    const data = Object.fromEntries(new FormData(form));
-    delete data._gotcha;
-    data.page = location.pathname;
-    if (window.gtag) gtag("event", "generate_lead", { region: data.region, venue_type: data.venue_type });
-    const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Sending…";
-    if (FORM_ENDPOINT) {
-      try {
-        const res = await fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(data) });
-        if (!res.ok) throw new Error(res.status);
-        location.href = "/thank-you/"; return;
-      } catch (err) { msg.textContent = "Something went wrong. Please WhatsApp us instead."; msg.className = "form-msg err"; btn.disabled = false; btn.textContent = "Request my free station"; return; }
-    }
-    const text = `New venue enquiry (${data.region})\nVenue: ${data.venue}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nType: ${data.venue_type}\nLocation: ${data.location}\nWeekly customers: ${data.footfall || "-"}`;
-    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank");
-    location.href = "/thank-you/";
-  });
-});
-
-/* ---------- Setup card: venues + weekly customers -> recommended setup -> one-field capture ---------- */
+/* ---------- Setup card: market -> venues -> weekly customers -> contact ----------
+   Every lead is tagged with market (IE / UK / EU / INTL) and lead_status:
+     IE, UK -> "active"       (sales lead for that market)
+     EU     -> "eu_priority"  (priority onboarding list for EU expansion)
+     INTL   -> "waitlist"                                                     */
 (function () {
   const card = document.getElementById("setup-card");
   if (!card) return;
-  const slider = card.querySelector("#setup-slider");
-  const countEl = card.querySelector("#setup-count");
-  const perEl = card.querySelector("#setup-per");
-  const q2 = card.querySelector("#setup-q2");
-  const nameEl = card.querySelector("#setup-name");
-  const incEl = card.querySelector("#setup-inc");
-  const bars = card.querySelectorAll(".setup-meter i");
-  const pills = card.querySelectorAll(".setup-pill");
-  const hV = card.querySelector("#setup-h-venues"), hC = card.querySelector("#setup-h-customers"), hR = card.querySelector("#setup-h-rec");
-  const STOPS = [50, 100, 250, 500, 1000, 2500, 5000];   // notch values, evenly spaced on the slider
-  let sites = "1";
+  const $ = s => card.querySelector(s);
+  const slider = $("#setup-slider"), bars = card.querySelectorAll(".setup-meter i");
+  const marketPills = card.querySelectorAll("#setup-market .setup-pill"), sitePills = card.querySelectorAll("#setup-sites .setup-pill");
+  const country = $("#setup-country"), submit = $("#setup-submit");
+  const STOPS = [50, 100, 250, 500, 1000, 2500, 5000];
+  const MARKET = {
+    IE:   { status: "active",      cur: "€", button: "Get my free station",
+            reassure: "We'll call you within one working day · free install · no spam",
+            done: ["Got it. Thanks.", "Someone from Jolt Ireland will be in touch within one working day."] },
+    UK:   { status: "active",      cur: "£", button: "Get my free station",
+            reassure: "We'll call you within one working day · free install · no spam",
+            done: ["Got it. Thanks.", "Someone from the Jolt UK team will be in touch within one working day."] },
+    EU:   { status: "eu_priority", cur: "€", button: "Join the EU priority list",
+            reassure: "No cost · no commitment · we'll only contact you about onboarding",
+            done: ["Thank you so much.", "We'll be expanding into the EU shortly. When we do, you're on the priority list for onboarding."] },
+    INTL: { status: "waitlist",    cur: "",  button: "Join the waitlist",
+            reassure: "No cost · no commitment · we'll only contact you when we launch near you",
+            done: ["Great, you're on the waitlist.", "We'll reach out as soon as it's time for us to service your area."] },
+  };
+  let market = card.dataset.preset || "", sites = "1";
+  if (!market) {                                   // main page: best guess from the browser language, visitor can change it
+    const l = (navigator.language || "").toLowerCase();
+    market = l === "en-gb" ? "UK" : l === "en-ie" || l === "ga" ? "IE" : "IE";
+  }
 
-  const valueAt = pos => {                                  // pos 0..600 -> customers (log between notches)
+  const valueAt = pos => {
     const seg = Math.min(5, Math.floor(pos / 100)), t = (pos - seg * 100) / 100;
     const v = STOPS[seg] * Math.pow(STOPS[seg + 1] / STOPS[seg], t);
     return v < 100 ? Math.round(v / 10) * 10 : v < 1000 ? Math.round(v / 50) * 50 : Math.round(v / 250) * 250;
   };
   const fmt = v => (v >= 5000 ? "5,000+" : v.toLocaleString("en-IE"));
+  const station = v => v < 250 ? ["Compact station", "Small countertop unit that sits beside the till"]
+                    : v < 1500 ? ["Standard station", "Countertop station sized for a steady flow of customers"]
+                    : ["High-capacity station", "More power banks on hand for busy bars, hotels and venues"];
 
-  function station(v) {
-    if (v < 250) return ["Compact station", "Small countertop unit that sits beside the till"];
-    if (v < 1500) return ["Standard station", "Countertop station sized for a steady flow of customers"];
-    return ["High-capacity station", "More power banks on hand for busy bars, hotels and venues"];
+  function select(pills, el) {
+    pills.forEach(x => { x.classList.remove("is-active"); x.setAttribute("aria-checked", "false"); });
+    el.classList.add("is-active"); el.setAttribute("aria-checked", "true");
   }
 
   function update() {
-    const pos = +slider.value, v = valueAt(pos);
+    const M = MARKET[market], pos = +slider.value, v = valueAt(pos), multi = sites !== "1";
     slider.style.setProperty("--p", (pos / 6) + "%");
-    countEl.textContent = fmt(v);
-    const multi = sites !== "1";
-    q2.textContent = multi ? "How many customers a week, per venue?" : "How many customers a week?";
-    perEl.textContent = multi ? " per venue" : "";
+    $("#setup-count").textContent = fmt(v);
+    $("#setup-q3").textContent = multi ? "How many customers a week, per venue?" : "How many customers a week?";
+    $("#setup-per").textContent = multi ? " per venue" : "";
     const [st, desc] = station(v);
     let name, inc;
     if (sites === "1") { name = st; inc = desc + " · installed free · you earn a revenue share"; }
     else if (sites === "2") { name = "2 × " + st; inc = "A station in each venue · installed free · revenue share on both"; }
     else if (sites === "3-10") { name = st + " in every venue"; inc = "We plan placement across all your sites · installed free · revenue share on each"; }
     else { name = "Group rollout"; inc = "A rollout plan for your whole group, venue by venue · installed free · revenue share across the group"; }
-    nameEl.textContent = name; incEl.textContent = inc;
+
+    const result = $("#setup-result");
+    result.classList.toggle("is-list", market === "EU" || market === "INTL");
+    if (market === "EU") {
+      $("#setup-label").textContent = "EU priority list";
+      $("#setup-name").textContent = "We're expanding into the EU shortly";
+      $("#setup-price").innerHTML = "Register now for <strong>priority onboarding</strong>";
+      $("#setup-inc").textContent = "When we launch in your country you'll be first in line for a " + name.toLowerCase() + ".";
+      $("#setup-q4").textContent = "Where should we reach you?";
+    } else if (market === "INTL") {
+      $("#setup-label").textContent = "Waitlist";
+      $("#setup-name").textContent = "Not in your area yet";
+      $("#setup-price").innerHTML = "Join the <strong>waitlist</strong>";
+      $("#setup-inc").textContent = "We'll reach out as soon as we can service your area.";
+      $("#setup-q4").textContent = "Where should we reach you?";
+    } else {
+      $("#setup-label").textContent = "Recommended setup";
+      $("#setup-name").textContent = name;
+      $("#setup-price").innerHTML = `Cost to you: <strong>${M.cur}0</strong>`;
+      $("#setup-inc").textContent = inc;
+      $("#setup-q4").textContent = "Where should we send your setup?";
+    }
+    const needCountry = market === "EU" || market === "INTL";
+    country.hidden = !needCountry; country.required = needCountry;
+    submit.textContent = M.button;
+    $("#setup-reassure").textContent = M.reassure;
     const lit = Math.max(1, Math.round((pos / 600) * bars.length));
     bars.forEach((b, i) => b.classList.toggle("on", i < lit));
-    hV.value = sites; hC.value = v >= 5000 ? "5000+" : v; hR.value = name;
+    $("#setup-h-market").value = market; $("#setup-h-status").value = M.status;
+    $("#setup-h-venues").value = sites; $("#setup-h-customers").value = v >= 5000 ? "5000+" : v; $("#setup-h-rec").value = name;
   }
 
-  pills.forEach(p => p.addEventListener("click", () => {
-    pills.forEach(x => { x.classList.remove("is-active"); x.setAttribute("aria-checked", "false"); });
-    p.classList.add("is-active"); p.setAttribute("aria-checked", "true");
-    sites = p.dataset.sites; update();
-  }));
+  marketPills.forEach(p => {
+    if (p.dataset.market === market) select(marketPills, p);
+    p.addEventListener("click", () => { select(marketPills, p); market = p.dataset.market; update(); });
+  });
+  sitePills.forEach(p => p.addEventListener("click", () => { select(sitePills, p); sites = p.dataset.sites; update(); }));
   slider.addEventListener("input", update);
   update();
 
-  const form = card.querySelector("#setup-form"), msg = form.querySelector(".form-msg");
+  const form = $("#setup-form"), msg = form.querySelector(".form-msg");
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (form._gotcha.value) return;
@@ -100,11 +114,13 @@ document.querySelectorAll(".lead-form").forEach(form => {
       const bad = !v || (f.type === "email" && !/^\S+@\S+\.\S+$/.test(v)) || (f.type === "tel" && v.replace(/\D/g, "").length < 7);
       f.classList.toggle("invalid", bad); if (bad) ok = false;
     });
-    if (!ok) { msg.textContent = "Please fill in all four fields so we can reach you."; msg.className = "form-msg err"; return; }
+    if (!ok) { msg.textContent = "Please fill in every field so we can reach you."; msg.className = "form-msg err"; return; }
     msg.textContent = "";
-    const data = Object.fromEntries(new FormData(form)); delete data._gotcha; data.page = location.pathname;
-    if (window.gtag) gtag("event", "generate_lead", { form_id: "setup-hero", region: data.region, venues: data.venues });
-    const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Sending…";
+    const data = Object.fromEntries(new FormData(form)); delete data._gotcha;
+    if (!country.required) delete data.country;
+    data.page = location.pathname;
+    if (window.gtag) gtag("event", "generate_lead", { form_id: "setup-hero", market: data.market, lead_status: data.lead_status, venues: data.venues });
+    submit.disabled = true; submit.textContent = "Sending…";
     let sent = false;
     if (FORM_ENDPOINT) {
       try {
@@ -113,9 +129,13 @@ document.querySelectorAll(".lead-form").forEach(form => {
       } catch (_) {}
     }
     if (!sent) {
-      const text = `New venue enquiry (${data.region})\nBusiness: ${data.business}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
+      const tag = { active: `${data.market} LEAD`, eu_priority: "EU PRIORITY LIST", waitlist: "INTERNATIONAL WAITLIST" }[data.lead_status];
+      const text = `[${tag}]\nBusiness: ${data.business}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}` +
+        (data.country ? `\nCountry: ${data.country}` : "") +
+        `\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
       window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank");
     }
-    card.querySelector(".setup-capture").innerHTML = '<div class="setup-success"><b>Got it. Thanks.</b><p class="muted">Someone from Jolt will be in touch within one working day.</p></div>';
+    const [h, p] = MARKET[market].done;
+    $(".setup-capture").innerHTML = `<div class="setup-success"><b>${h}</b><p class="muted">${p}</p></div>`;
   });
 })();

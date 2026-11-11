@@ -1,33 +1,38 @@
-"""Generates the Jolt Power Bank static site: / (region chooser), /ie/, /uk/, thank-you pages, sitemap, robots."""
-import os, json, sys
+"""Builds the Jolt Power Bank static site.
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else "site"
+Pages:  /        main page (market chosen inside the form)
+        /ie/     same page, Ireland pre-selected (for Irish search traffic)
+        /uk/     same page, UK pre-selected (for UK search traffic)
+        /thank-you/, sitemap.xml, robots.txt
+
+Content you can edit without touching the code:
+  content/testimonials.json   quotes for the testimonial conveyor
+  assets/logos/               venue logo files (.svg/.png/.jpg/.webp); every file here goes on the logo conveyor
+Run:  python build.py <output-folder>      (default: current folder)
+"""
+import os, json, sys, html
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = sys.argv[1] if len(sys.argv) > 1 else HERE
 DOMAIN = "https://www.joltpowerbank.com"   # change here if a different .com is registered
 WHATSAPP = "353870365888"
 WHATSAPP_DISPLAY = "+353 87 036 5888"
 APP_URL = "https://joltireland.com"        # TODO: replace with App Store / Google Play links
+PRIVACY = "https://m.joltireland.com/content/privacy_policy.html"
 
-LOGO = '''<a href="{home}" class="logo" aria-label="Jolt home">JO<svg viewBox="0 0 14 24" aria-hidden="true"><rect x="1" y="3" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4.5" y="0.5" width="5" height="3" rx="1" fill="currentColor"/><path d="M8 7 4.5 14H7l-1 5 3.5-7H7z" fill="var(--green)"/></svg>T</a>'''
+LOGO = '''<a href="/" class="logo" aria-label="Jolt home">JO<svg viewBox="0 0 14 24" aria-hidden="true"><rect x="1" y="3" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4.5" y="0.5" width="5" height="3" rx="1" fill="currentColor"/><path d="M8 7 4.5 14H7l-1 5 3.5-7H7z" fill="var(--green)"/></svg>T</a>'''
 
-REGIONS = {
-  "ie": {
-    "lang": "en-IE", "country": "Ireland", "people": "Irish",
-    "price": "from €2 per hour", "cur": "€",
-    "cities": ["Dublin", "Cork", "Galway", "Limerick", "Waterford", "Kilkenny", "Belfast", "Derry"],
-    "phone_ph": "087 123 4567", "postcode": "Eircode / town",
-    "title": "Free Power Bank Charging Stations for Venues in Ireland | Jolt",
-    "desc": "Get a free Jolt power bank rental station for your pub, restaurant, hotel or venue in Ireland. No cost, revenue share, we install and maintain it.",
-    "other": ("uk", "United Kingdom"),
-  },
-  "uk": {
-    "lang": "en-GB", "country": "the UK", "people": "UK",
-    "price": "low hourly pricing", "cur": "£",   # TODO: confirm UK price (e.g. from £2 per hour)
-    "cities": ["London", "Manchester", "Birmingham", "Glasgow", "Edinburgh", "Liverpool", "Leeds", "Bristol"],
-    "phone_ph": "07123 456789", "postcode": "Postcode / town",
-    "title": "Free Power Bank Charging Stations for UK Venues | Jolt",
-    "desc": "Get a free Jolt power bank rental station for your pub, bar, restaurant, hotel or venue in the UK. No cost, revenue share, fully installed and maintained.",
-    "other": ("ie", "Ireland"),
-  },
+# Landing-page variants. key None = main page.
+PAGES = {
+  None: {"path": "/", "lang": "en", "market": "",
+         "title": "Jolt | Free Power Bank Rental Stations for Venues",
+         "desc": "Jolt installs free power bank rental stations in pubs, restaurants, hotels and venues across Ireland and the UK. No cost, revenue share, fully maintained."},
+  "ie": {"path": "/ie/", "lang": "en-IE", "market": "IE",
+         "title": "Free Power Bank Charging Stations for Venues in Ireland | Jolt",
+         "desc": "Get a free Jolt power bank rental station for your pub, restaurant, hotel or venue in Ireland. No cost, revenue share, we install and maintain it."},
+  "uk": {"path": "/uk/", "lang": "en-GB", "market": "UK",
+         "title": "Free Power Bank Charging Stations for UK Venues | Jolt",
+         "desc": "Get a free Jolt power bank rental station for your pub, bar, restaurant, hotel or venue in the UK. No cost, revenue share, fully installed and maintained."},
 }
 
 VENUES = [
@@ -45,110 +50,120 @@ FAQ = [
   ("Who looks after the station?", "We do. Jolt installs the station, keeps it stocked and handles any customer support. Your staff don't need to do anything."),
   ("What happens if a customer doesn't return a power bank?", "Every rental is secured with a card pre-authorisation, so the cost of an unreturned power bank is covered by the customer, not your venue."),
   ("Which phones does it work with?", "Each 6000mAh power bank has three built-in cables: Lightning, USB-C and Micro-USB, so it works with iPhone and modern Android phones."),
-  ("Can customers return it somewhere else?", "Yes. Customers can rent at your venue and return to any Jolt station in the network, across Ireland and the UK."),
-  ("How long does installation take?", "Once we've agreed placement, installation is quick and done at a time that suits your venue."),
+  ("Where does Jolt operate?", "Jolt installs stations across Ireland and the UK today. Businesses in the EU can join our priority list for onboarding as we expand, and businesses elsewhere can join the waitlist."),
 ]
 
-def head(r, path, title, desc, extra=""):
-    alts = "".join(f'<link rel="alternate" hreflang="{REGIONS[k]["lang"].lower()}" href="{DOMAIN}/{k}/">' for k in REGIONS)
+e = html.escape
+
+def load_testimonials():
+    p = os.path.join(HERE, "content", "testimonials.json")
+    with open(p, encoding="utf-8") as f:
+        return json.load(f)
+
+def load_logos():
+    d = os.path.join(HERE, "assets", "logos")
+    if not os.path.isdir(d):
+        return []
+    files = sorted(x for x in os.listdir(d) if x.lower().endswith((".svg", ".png", ".jpg", ".jpeg", ".webp")))
+    return [(f"/assets/logos/{x}", os.path.splitext(x)[0].replace("-", " ").replace("_", " ").title()) for x in files]
+
+def testimonial_html(t):
+    ph = " is-placeholder" if t.get("placeholder") else ""
+    return (f'<figure class="tcard{ph}"><div class="tstars" aria-label="5 stars">★★★★★</div>'
+            f'<blockquote>{e(t["quote"])}</blockquote>'
+            f'<figcaption><b>{e(t["name"])}</b><span>{e(t["venue"])}</span></figcaption></figure>')
+
+def logos_html(logos):
+    if logos:
+        return "".join(f'<div class="logo-tile"><img src="{src}" alt="{e(alt)}" loading="lazy"></div>' for src, alt in logos)
+    return "".join('<div class="logo-tile is-placeholder">Venue logo</div>' for _ in range(10))
+
+def conveyor(items_html, cls, reverse=False):
+    # content is duplicated so the CSS loop is seamless
+    return (f'<div class="conveyor {cls}{" reverse" if reverse else ""}"><div class="conveyor-track">'
+            f'{items_html}<div class="conveyor-dup" aria-hidden="true">{items_html}</div></div></div>')
+
+def head(key):
+    P = PAGES[key]
+    alts = "".join(f'<link rel="alternate" hreflang="{PAGES[k]["lang"].lower()}" href="{DOMAIN}{PAGES[k]["path"]}">' for k in ("ie", "uk"))
     alts += f'<link rel="alternate" hreflang="x-default" href="{DOMAIN}/">'
-    lang = REGIONS[r]["lang"] if r else "en"
+    ld_org = {"@context": "https://schema.org", "@type": "Organization", "name": "Jolt", "legalName": "Jolt Ireland Technology Ltd",
+              "url": DOMAIN, "areaServed": ["IE", "GB"],
+              "contactPoint": {"@type": "ContactPoint", "telephone": "+" + WHATSAPP, "contactType": "sales", "areaServed": ["IE", "GB"]}}
+    ld_faq = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in FAQ]}
     return f'''<!DOCTYPE html>
-<html lang="{lang}">
+<html lang="{P["lang"]}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title}</title>
-<meta name="description" content="{desc}">
-<link rel="canonical" href="{DOMAIN}{path}">
+<title>{P["title"]}</title>
+<meta name="description" content="{P["desc"]}">
+<link rel="canonical" href="{DOMAIN}{P["path"]}">
 {alts}
-<meta property="og:type" content="website">
-<meta property="og:title" content="{title}">
-<meta property="og:description" content="{desc}">
-<meta property="og:url" content="{DOMAIN}{path}">
+<meta property="og:type" content="website"><meta property="og:title" content="{P["title"]}"><meta property="og:description" content="{P["desc"]}"><meta property="og:url" content="{DOMAIN}{P["path"]}">
 <meta name="theme-color" content="#050505">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 <!-- GA4: paste the gtag snippet here once the property is created -->
-{extra}
+<script type="application/ld+json">{json.dumps(ld_org)}</script><script type="application/ld+json">{json.dumps(ld_faq)}</script>
 </head>
 <body>'''
 
-def nav(r):
-    home = f"/{r}/" if r else "/"
-    other = ""
-    if r:
-        ok, oname = REGIONS[r]["other"]
-        flag = "IE" if r == "ie" else "UK"
-        other = f'<a class="region" href="/{ok}/" hreflang="{REGIONS[ok]["lang"].lower()}" title="Switch to {oname}">{flag} ▾</a>'
-    return f'''<header class="nav"><div class="wrap nav-in">
-{LOGO.format(home=home)}
-<nav class="links">{'<a href="#how">How it works</a><a href="#venues">Venues</a><a href="#faq">FAQ</a>' if r else ''}</nav>
-<div class="nav-cta">{other}<a class="btn btn-green sm" href="{home}#get-station">Get a free station</a></div>
+NAV = f'''<header class="nav"><div class="wrap nav-in">
+{LOGO}
+<nav class="links"><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
+<div class="nav-cta"><a class="btn btn-green sm" href="#setup-card">Get a free station</a></div>
 </div></header>'''
 
-def footer(r):
-    return f'''<footer class="foot"><div class="wrap foot-in">
-<div>{LOGO.format(home="/")}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
-<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a></div>
+FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
+<div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
+<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
 <div><h4>Customers</h4><a href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
-</div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="https://m.joltireland.com/content/privacy_policy.html">Privacy</a></div></footer>
+</div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
 <a class="wa-float" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue" aria-label="Message Jolt on WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
 <script src="/assets/site.js" defer></script>
 </body></html>'''
 
-def region_page(r):
-    R = REGIONS[r]
-    ld_org = {"@context": "https://schema.org", "@type": "Organization", "name": "Jolt", "legalName": "Jolt Ireland Technology Ltd",
-              "url": DOMAIN, "areaServed": ["IE", "GB"],
-              "contactPoint": {"@type": "ContactPoint", "telephone": "+" + WHATSAPP, "contactType": "sales", "areaServed": ["IE", "GB"]}}
-    ld_faq = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
-        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in FAQ]}
-    extra = f'<script type="application/ld+json">{json.dumps(ld_org)}</script><script type="application/ld+json">{json.dumps(ld_faq)}</script>'
-    venues = "".join(f'<article class="card"><h3>{t}</h3><p>{d}</p></article>' for t, d in VENUES)
-    faq = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQ)
-    cities = " · ".join(R["cities"])
-    venue_opts = "".join(f"<option>{t}</option>" for t, _ in VENUES) + "<option>Other</option>"
-    return head(r, f"/{r}/", R["title"], R["desc"], extra) + nav(r) + f'''
-<main>
-<section class="hero"><div class="wrap hero-in">
-<div class="hero-copy">
-<span class="pill">Free for venues in {R["country"]}</span>
-<h1>Phone charging your customers will use. <em>At no cost to your venue.</em></h1>
-<p class="lead">Jolt installs a power bank rental station in your venue for free. Customers rent a charger in seconds, keep it with them, and return it to any Jolt station. You earn a share of the revenue.</p>
-<ul class="ticks"><li>No cost to your venue</li><li>Revenue share model</li><li>We install and maintain everything</li></ul>
-<div class="hero-ctas"><a class="btn btn-green" href="#get-station">Get a free station</a><a class="btn btn-ghost" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue">Message us on WhatsApp</a></div>
-</div>
-<div class="setup-card" id="setup-card" data-region="{r}" data-cur="{R["cur"]}">
-<div class="setup-card__head"><h2>See your free setup</h2><p>Tell us your venues, then slide for customer numbers</p></div>
-<span class="setup-step"><span class="setup-step__num">1</span> How many venues do you run?</span>
-<div class="setup-pills" role="radiogroup" aria-label="Number of venues">
+MARKETS = [("IE", "Ireland"), ("UK", "UK"), ("EU", "EU"), ("INTL", "International")]
+
+def setup_card(preset):
+    pills = "".join(
+        f'<button type="button" class="setup-pill{" is-active" if code == preset else ""}" role="radio" aria-checked="{"true" if code == preset else "false"}" data-market="{code}">{label}</button>'
+        for code, label in MARKETS)
+    return f'''<div class="setup-card" id="setup-card" data-preset="{preset}">
+<div class="setup-card__head"><h2>See your free setup</h2><p>Four quick steps. Takes under a minute.</p></div>
+<span class="setup-step"><span class="setup-step__num">1</span> Where is your business?</span>
+<div class="setup-pills" id="setup-market" role="radiogroup" aria-label="Where is your business">{pills}</div>
+<span class="setup-step"><span class="setup-step__num">2</span> How many venues do you run?</span>
+<div class="setup-pills" id="setup-sites" role="radiogroup" aria-label="Number of venues">
 <button type="button" class="setup-pill is-active" role="radio" aria-checked="true" data-sites="1">Just one</button>
 <button type="button" class="setup-pill" role="radio" aria-checked="false" data-sites="2">Two</button>
 <button type="button" class="setup-pill" role="radio" aria-checked="false" data-sites="3-10">3 to 10</button>
 <button type="button" class="setup-pill" role="radio" aria-checked="false" data-sites="10+">A group of 10+</button>
 </div>
-<span class="setup-step"><span class="setup-step__num">2</span> <span id="setup-q2">How many customers a week?</span></span>
+<span class="setup-step"><span class="setup-step__num">3</span> <span id="setup-q3">How many customers a week?</span></span>
 <div class="setup-slider-wrap">
 <input type="range" class="setup-slider" id="setup-slider" min="0" max="600" step="1" value="300" aria-label="Customers per week">
 <div class="setup-notches" aria-hidden="true"><span>50</span><span>100</span><span>250</span><span>500</span><span>1k</span><span>2.5k</span><span>5k+</span></div>
 <div class="setup-count"><strong id="setup-count">500</strong> customers a week<span id="setup-per"></span></div>
 </div>
 <div class="setup-meter" aria-hidden="true">{"".join('<i></i>' for _ in range(12))}</div>
-<div class="setup-result" aria-live="polite">
-<span class="setup-result__label">Recommended setup</span>
+<div class="setup-result" id="setup-result" aria-live="polite">
+<span class="setup-result__label" id="setup-label">Recommended setup</span>
 <span class="setup-result__name" id="setup-name">Standard station</span>
-<span class="setup-result__price">Cost to you: <strong>{R["cur"]}0</strong></span>
+<span class="setup-result__price" id="setup-price">Cost to you: <strong>€0</strong></span>
 <span class="setup-result__inc" id="setup-inc">Installed free · we keep it stocked · you earn a revenue share</span>
 </div>
 <div class="setup-capture">
-<span class="setup-step"><span class="setup-step__num">3</span> Where should we send your setup?</span>
+<span class="setup-step"><span class="setup-step__num">4</span> <span id="setup-q4">Where should we send your setup?</span></span>
 <form class="setup-form" id="setup-form" data-form-type="setup-hero" novalidate>
 <input type="hidden" name="source" value="setup-hero">
-<input type="hidden" name="region" value="{r.upper()}">
+<input type="hidden" name="market" id="setup-h-market" value="{preset}">
+<input type="hidden" name="lead_status" id="setup-h-status" value="">
 <input type="hidden" name="venues" id="setup-h-venues" value="1">
 <input type="hidden" name="weekly_customers" id="setup-h-customers" value="500">
 <input type="hidden" name="recommended" id="setup-h-rec" value="Standard station">
@@ -157,24 +172,51 @@ def region_page(r):
 <input type="text" name="business" class="setup-form__input" placeholder="Business name" required autocomplete="organization" aria-label="Business name">
 <input type="text" name="name" class="setup-form__input" placeholder="Your name" required autocomplete="name" aria-label="Your name">
 <input type="email" name="email" class="setup-form__input" placeholder="Email" required autocomplete="email" aria-label="Email">
-<input type="tel" name="phone" class="setup-form__input" placeholder="Phone ({R["phone_ph"]})" required autocomplete="tel" aria-label="Phone number">
+<input type="tel" name="phone" class="setup-form__input" placeholder="Phone" required autocomplete="tel" aria-label="Phone number">
+<input type="text" name="country" id="setup-country" class="setup-form__input span2" placeholder="Country" autocomplete="country-name" aria-label="Country" hidden>
 </div>
-<button type="submit" class="btn btn-green full">Get my free station</button>
+<button type="submit" class="btn btn-green full" id="setup-submit">Get my free station</button>
 <p class="form-msg" role="status"></p>
 </form>
-<p class="setup-capture__reassure">We'll call you within one working day · free install · no spam</p>
+<p class="setup-capture__reassure" id="setup-reassure">We'll call you within one working day · free install · no spam</p>
 </div>
-</div></div>
+</div>'''
+
+def page(key):
+    P = PAGES[key]
+    T = load_testimonials()
+    half = (len(T) + 1) // 2
+    row1 = "".join(testimonial_html(t) for t in T[:half])
+    row2 = "".join(testimonial_html(t) for t in T[half:]) or row1
+    logos = logos_html(load_logos())
+    venues = "".join(f'<article class="card"><h3>{t}</h3><p>{d}</p></article>' for t, d in VENUES)
+    faq = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQ)
+    return head(key) + NAV + f'''
+<main>
+<section class="hero"><div class="wrap hero-in">
+<div class="hero-copy">
+<span class="pill">4,000+ locations across Ireland &amp; the UK</span>
+<h1>Free power bank stations. <em>Zero cost to your venue.</em></h1>
+<p class="lead">We install it, keep it stocked and maintain it. Your customers rent a charger in seconds. You earn a share of every rental.</p>
+<div class="proof">
+<p class="proof-label">What venues say</p>
+{conveyor(row1, "tconv")}
+{conveyor(row2, "tconv", reverse=True)}
+<p class="proof-label">Trusted by venues across Ireland &amp; the UK</p>
+{conveyor(logos, "lconv")}
+</div>
+</div>
+{setup_card(P["market"])}
 </div></section>
 
 <section class="band"><div class="wrap band-in">
-<div><b>{R["cur"]}0</b><span>to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>
+<div><b>0</b><span>cost to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>
 </div></section>
 
 <section id="how" class="sec"><div class="wrap">
 <h2>How it works for your venue</h2>
 <ol class="steps">
-<li><b>01</b><h3>Tell us about your venue</h3><p>Fill in the short form below. We'll come back to you within one working day.</p></li>
+<li><b>01</b><h3>Tell us about your venue</h3><p>Fill in the four quick steps above. We'll come back to you within one working day.</p></li>
 <li><b>02</b><h3>We install the station</h3><p>We agree the best spot with you and install the station free of charge. It needs a standard power socket.</p></li>
 <li><b>03</b><h3>Customers rent and return</h3><p>Customers scan, pay by card or app, and return to any Jolt station. Fees are settled automatically.</p></li>
 <li><b>04</b><h3>You earn a share</h3><p>Your venue receives a share of the rental revenue. We handle stock, maintenance and support.</p></li>
@@ -184,64 +226,21 @@ def region_page(r):
 <section id="venues" class="sec alt"><div class="wrap">
 <h2>Built for busy venues</h2>
 <div class="grid">{venues}</div>
+<p class="center-cta"><a class="btn btn-green" href="#setup-card">See your free setup</a></p>
 </div></section>
 
-<section class="sec"><div class="wrap split">
-<div><h2>Why venues choose Jolt</h2>
-<ul class="ticks big">
-<li><b>No staff time.</b> No phones behind the bar, no cables to lend out, nothing to track.</li>
-<li><b>Customers stay longer.</b> A dead phone is a common reason to leave early.</li>
-<li><b>Works with every phone.</b> Lightning, USB-C and Micro-USB built into each power bank.</li>
-<li><b>No risk.</b> Every rental is secured with a card pre-authorisation.</li>
-<li><b>Part of a large network.</b> Customers can return to any of 4,000+ locations, which makes them more likely to rent.</li>
-</ul></div>
-<div class="panel"><h3>For your customers</h3><p>Rental is {R["price"]}, paid by card or through the Jolt app. They can take the power bank with them and drop it at any station across Ireland and the UK.</p><a class="btn btn-ghost" href="{APP_URL}">Get the app</a></div>
-</div></section>
-
-<section id="get-station" class="sec form-sec"><div class="wrap split">
-<div><h2>Get a free Jolt station</h2><p class="lead">Tell us a little about your venue and we'll be in touch within one working day.</p>
-<p class="muted">Prefer to talk? WhatsApp us on <a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a>.</p>
-<p class="muted small">Serving venues in {cities} and across {R["country"]}.</p></div>
-<form class="lead-form" data-region="{r}" action="/thank-you/" method="post" novalidate>
-<input type="hidden" name="region" value="{r.upper()}">
-<input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
-<label>Venue name<input name="venue" required autocomplete="organization"></label>
-<label>Your name<input name="name" required autocomplete="name"></label>
-<div class="row"><label>Email<input type="email" name="email" required autocomplete="email"></label>
-<label>Phone<input type="tel" name="phone" required placeholder="{R["phone_ph"]}" autocomplete="tel"></label></div>
-<div class="row"><label>Venue type<select name="venue_type" required><option value="">Select</option>{venue_opts}</select></label>
-<label>Location<input name="location" required placeholder="{R["postcode"]}"></label></div>
-<label>Roughly how many customers a week?<select name="footfall"><option value="">Select</option><option>Under 500</option><option>500 – 2,000</option><option>2,000 – 5,000</option><option>5,000+</option></select></label>
-<button class="btn btn-green full" type="submit">Request my free station</button>
-<p class="form-msg" role="status"></p>
-<p class="muted small">We only use these details to contact you about a Jolt station. See our <a href="https://m.joltireland.com/content/privacy_policy.html">privacy policy</a>.</p>
-</form>
-</div></section>
-
-<section id="faq" class="sec alt"><div class="wrap narrow">
+<section id="faq" class="sec"><div class="wrap narrow">
 <h2>Questions venues ask</h2>{faq}
 </div></section>
-</main>''' + footer(r)
-
-def root_page():
-    cards = "".join(f'''<a class="region-card" href="/{k}/" hreflang="{R["lang"].lower()}"><span class="code">{"IE" if k=="ie" else "UK"}</span><h2>{"Ireland" if k=="ie" else "United Kingdom"}</h2><p>Free power bank stations for venues in {R["country"]}.</p><span class="arrow">→</span></a>''' for k, R in REGIONS.items())
-    return head(None, "/", "Jolt | Free Power Bank Rental Stations for Venues in Ireland & the UK",
-                "Jolt installs free power bank rental stations in pubs, restaurants, hotels and venues across Ireland and the UK. No cost, revenue share, fully maintained.") + nav(None) + f'''
-<main><section class="hero root"><div class="wrap">
-<span class="pill">4,000+ locations across Ireland &amp; the UK</span>
-<h1>Free power bank stations for your venue.</h1>
-<p class="lead">No cost. Revenue share. We install and maintain it. Choose your country to get started.</p>
-<div class="regions" id="get-station">{cards}</div>
-<p class="muted small">Looking to rent a power bank? <a href="{APP_URL}">Download the Jolt app</a>.</p>
-</div></section></main>''' + footer(None)
+</main>''' + FOOTER
 
 def thanks_page():
-    return head(None, "/thank-you/", "Thanks | Jolt", "Thanks for your enquiry.", '<meta name="robots" content="noindex">') + nav(None) + f'''
+    return head(None).replace(f'<link rel="canonical" href="{DOMAIN}/">', f'<link rel="canonical" href="{DOMAIN}/thank-you/"><meta name="robots" content="noindex">') + NAV + f'''
 <main><section class="hero root"><div class="wrap narrow">
 <h1>Thanks. We've got your details.</h1>
 <p class="lead">Someone from the Jolt team will be in touch within one working day. If it's urgent, message us on WhatsApp.</p>
 <a class="btn btn-green" href="https://wa.me/{WHATSAPP}">WhatsApp {WHATSAPP_DISPLAY}</a>
-</div></section></main>''' + footer(None)
+</div></section></main>''' + FOOTER
 
 def write(path, content):
     full = os.path.join(OUT, path)
@@ -249,17 +248,16 @@ def write(path, content):
     with open(full, "w", encoding="utf-8") as f:
         f.write(content)
 
-write("index.html", root_page())
-for r in REGIONS:
-    write(f"{r}/index.html", region_page(r))
+write("index.html", page(None))
+write("ie/index.html", page("ie"))
+write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
-urls = ["/", "/ie/", "/uk/"]
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
-for u in urls:
-    sm += f"<url><loc>{DOMAIN}{u}</loc>"
-    for k in REGIONS:
-        sm += f'<xhtml:link rel="alternate" hreflang="{REGIONS[k]["lang"].lower()}" href="{DOMAIN}/{k}/"/>'
+for k in (None, "ie", "uk"):
+    sm += f'<url><loc>{DOMAIN}{PAGES[k]["path"]}</loc>'
+    for a in ("ie", "uk"):
+        sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)

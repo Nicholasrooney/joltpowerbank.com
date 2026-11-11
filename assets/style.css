@@ -124,3 +124,35 @@ details p{color:var(--muted);margin-top:.6rem}
 .setup-form{display:grid;gap:.6rem}
 .setup-form__grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
 @media(max-width:560px){.setup-form__grid{grid-template-columns:1fr}}
+/* ---- Market + list states ---- */
+.setup-result.is-list{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.04)}
+.setup-result.is-list .setup-result__label{color:#c9d1c9}
+.setup-form__input.span2{grid-column:1/-1}
+.setup-form__input[hidden]{display:none}
+.setup-pills{grid-template-columns:repeat(4,1fr)}
+.center-cta{text-align:center;margin-top:2.2rem}
+/* ---- Proof conveyors (testimonials + logos) ---- */
+.hero-in{align-items:start}
+.hero-copy{min-width:0}
+.hero-copy .lead{margin-bottom:1.6rem}
+.proof{display:grid;gap:.8rem;margin-top:.4rem}
+.proof-label{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:.4rem}
+.conveyor{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.conveyor-track{display:flex;width:max-content;animation:convey 60s linear infinite}
+.conveyor-track>*, .conveyor-dup>*{flex:none}
+.conveyor-dup{display:flex}
+.conveyor.reverse .conveyor-track{animation-direction:reverse;animation-duration:70s}
+.lconv .conveyor-track{animation-duration:40s}
+.conveyor:hover .conveyor-track{animation-play-state:paused}
+@keyframes convey{to{transform:translateX(-50%)}}
+.tcard{width:300px;margin-right:.8rem;border:1px solid var(--line);border-radius:16px;padding:1rem 1.1rem;background:#0a0c0a}
+.tstars{color:var(--green);letter-spacing:.15em;font-size:.8rem;margin-bottom:.4rem}
+.tcard blockquote{font-size:.92rem;color:#dfe5df;line-height:1.5;margin-bottom:.7rem}
+.tcard figcaption b{display:block;font-size:.85rem}.tcard figcaption span{font-size:.78rem;color:var(--muted)}
+.tcard.is-placeholder{border-style:dashed;border-color:#3a443a}.tcard.is-placeholder blockquote{color:var(--muted);font-style:italic}
+.logo-tile{display:grid;place-items:center;height:64px;min-width:150px;padding:0 1.4rem;margin-right:.8rem;border:1px solid var(--line);border-radius:14px;background:#0a0c0a}
+.logo-tile img{max-height:36px;max-width:130px;filter:grayscale(1) brightness(1.6);opacity:.85;transition:filter .2s,opacity .2s}
+.logo-tile:hover img{filter:none;opacity:1}
+.logo-tile.is-placeholder{border-style:dashed;border-color:#3a443a;color:#566056;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+@media(prefers-reduced-motion:reduce){.conveyor-track{animation:none}.conveyor{overflow-x:auto}}
+@media(max-width:900px){.hero-in{display:flex;flex-direction:column-reverse}.setup-card{width:100%}}
