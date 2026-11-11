@@ -94,9 +94,14 @@ document.querySelectorAll(".lead-form").forEach(form => {
   form.addEventListener("submit", async e => {
     e.preventDefault();
     if (form._gotcha.value) return;
-    const input = form.contact;
-    if (input.value.trim().length < 2) { input.classList.add("invalid"); msg.textContent = "Add your name or number so we can reach you."; msg.className = "form-msg err"; return; }
-    input.classList.remove("invalid");
+    let ok = true;
+    form.querySelectorAll("[required]").forEach(f => {
+      const v = f.value.trim();
+      const bad = !v || (f.type === "email" && !/^\S+@\S+\.\S+$/.test(v)) || (f.type === "tel" && v.replace(/\D/g, "").length < 7);
+      f.classList.toggle("invalid", bad); if (bad) ok = false;
+    });
+    if (!ok) { msg.textContent = "Please fill in all four fields so we can reach you."; msg.className = "form-msg err"; return; }
+    msg.textContent = "";
     const data = Object.fromEntries(new FormData(form)); delete data._gotcha; data.page = location.pathname;
     if (window.gtag) gtag("event", "generate_lead", { form_id: "setup-hero", region: data.region, venues: data.venues });
     const btn = form.querySelector("button"); btn.disabled = true; btn.textContent = "Sending…";
@@ -108,7 +113,7 @@ document.querySelectorAll(".lead-form").forEach(form => {
       } catch (_) {}
     }
     if (!sent) {
-      const text = `New venue enquiry (${data.region})\nContact: ${data.contact}\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
+      const text = `New venue enquiry (${data.region})\nBusiness: ${data.business}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
       window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank");
     }
     card.querySelector(".setup-capture").innerHTML = '<div class="setup-success"><b>Got it. Thanks.</b><p class="muted">Someone from Jolt will be in touch within one working day.</p></div>';

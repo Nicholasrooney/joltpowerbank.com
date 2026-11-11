@@ -56,7 +56,7 @@
 <span class="setup-result__inc" id="setup-inc">Installed free · we keep it stocked · you earn a revenue share</span>
 </div>
 <div class="setup-capture">
-<p class="setup-capture__prompt">Want this in your venue? Leave your name or number and we'll call you within one working day.</p>
+<span class="setup-step"><span class="setup-step__num">3</span> Where should we send your setup?</span>
 <form class="setup-form" id="setup-form" data-form-type="setup-hero" novalidate>
 <input type="hidden" name="source" value="setup-hero">
 <input type="hidden" name="region" value="IE">
@@ -64,10 +64,16 @@
 <input type="hidden" name="weekly_customers" id="setup-h-customers" value="500">
 <input type="hidden" name="recommended" id="setup-h-rec" value="Standard station">
 <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
-<div class="setup-form__row"><input type="text" name="contact" class="setup-form__input" placeholder="Your name or number" required autocomplete="off" aria-label="Your name or phone number"><button type="submit" class="btn btn-green">Get my station</button></div>
+<div class="setup-form__grid">
+<input type="text" name="business" class="setup-form__input" placeholder="Business name" required autocomplete="organization" aria-label="Business name">
+<input type="text" name="name" class="setup-form__input" placeholder="Your name" required autocomplete="name" aria-label="Your name">
+<input type="email" name="email" class="setup-form__input" placeholder="Email" required autocomplete="email" aria-label="Email">
+<input type="tel" name="phone" class="setup-form__input" placeholder="Phone (087 123 4567)" required autocomplete="tel" aria-label="Phone number">
+</div>
+<button type="submit" class="btn btn-green full">Get my free station</button>
 <p class="form-msg" role="status"></p>
 </form>
-<p class="setup-capture__reassure">Free install · no cost to your venue · no spam</p>
+<p class="setup-capture__reassure">We'll call you within one working day · free install · no spam</p>
 </div>
 </div></div>
 </div></section>
