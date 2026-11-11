@@ -43,9 +43,20 @@ const WHATSAPP = "353870365888";
     return v < 100 ? Math.round(v / 10) * 10 : v < 1000 ? Math.round(v / 50) * 50 : Math.round(v / 250) * 250;
   };
   const fmt = v => (v >= 5000 ? "5,000+" : v.toLocaleString("en-IE"));
-  const station = v => v < 250 ? ["Compact station", "Small countertop unit that sits beside the till"]
-                    : v < 1500 ? ["Standard station", "Countertop station sized for a steady flow of customers"]
-                    : ["High-capacity station", "More power banks on hand for busy bars, hotels and venues"];
+  // weekly customers per venue -> station from the range (slugs match /stations/<slug>/)
+  const station = v => v < 250  ? ["Countertop 8",  "8 power banks · sits beside the till", "countertop-8-black"]
+                    : v < 1000 ? ["Countertop 12", "12 power banks on a small countertop footprint", "countertop-12"]
+                    : v < 3000 ? ["Slim Kiosk 24", "24 power banks · floor-standing with tap-to-pay", "slim-kiosk-24"]
+                    :            ["Tower 48",      "48 power banks for the busiest venues", "tower-48"];
+  const NAMES = { "countertop-8-white": "Countertop 8 (white)", "countertop-8-black": "Countertop 8 (black)", "countertop-12": "Countertop 12",
+                  "slim-kiosk-24": "Slim Kiosk 24", "secure-locker-24": "Secure Locker 24", "media-kiosk-48": "Media Kiosk 48", "tower-48": "Tower 48" };
+  const wanted = new URLSearchParams(location.search).get("station");
+  if (wanted && NAMES[wanted]) {
+    $("#setup-h-station").value = NAMES[wanted];
+    const chip = $("#setup-interest"); chip.hidden = false;
+    chip.innerHTML = `Station you're interested in: <b>${NAMES[wanted]}</b> <button type="button" aria-label="Remove">×</button>`;
+    chip.querySelector("button").onclick = () => { chip.hidden = true; $("#setup-h-station").value = ""; };
+  }
 
   function select(pills, el) {
     pills.forEach(x => { x.classList.remove("is-active"); x.setAttribute("aria-checked", "false"); });
@@ -58,7 +69,7 @@ const WHATSAPP = "353870365888";
     $("#setup-count").textContent = fmt(v);
     $("#setup-q3").textContent = multi ? "How many customers a week, per venue?" : "How many customers a week?";
     $("#setup-per").textContent = multi ? " per venue" : "";
-    const [st, desc] = station(v);
+    const [st, desc, slug] = station(v);
     let name, inc;
     if (sites === "1") { name = st; inc = desc + " · installed free · you earn a revenue share"; }
     else if (sites === "2") { name = "2 × " + st; inc = "A station in each venue · installed free · revenue share on both"; }
@@ -86,6 +97,7 @@ const WHATSAPP = "353870365888";
       $("#setup-inc").textContent = inc;
       $("#setup-q4").textContent = "Where should we send your setup?";
     }
+    const link = $("#setup-link"); link.href = `/stations/${slug}/`; link.hidden = market === "EU" || market === "INTL";
     const needCountry = market === "EU" || market === "INTL";
     country.hidden = !needCountry; country.required = needCountry;
     submit.textContent = M.button;
@@ -132,10 +144,21 @@ const WHATSAPP = "353870365888";
       const tag = { active: `${data.market} LEAD`, eu_priority: "EU PRIORITY LIST", waitlist: "INTERNATIONAL WAITLIST" }[data.lead_status];
       const text = `[${tag}]\nBusiness: ${data.business}\nName: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}` +
         (data.country ? `\nCountry: ${data.country}` : "") +
-        `\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
+        (data.station_interest ? `\nInterested in: ${data.station_interest}` : "") + `\nVenues: ${data.venues}\nCustomers/week: ${data.weekly_customers}\nRecommended: ${data.recommended}`;
       window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(text)}`, "_blank");
     }
     const [h, p] = MARKET[market].done;
     $(".setup-capture").innerHTML = `<div class="setup-success"><b>${h}</b><p class="muted">${p}</p></div>`;
   });
+})();
+
+/* ---------- Station page gallery ---------- */
+(function () {
+  const main = document.getElementById("st-main");
+  if (!main) return;
+  const thumbs = document.querySelectorAll(".st-thumb");
+  thumbs.forEach(t => t.addEventListener("click", () => {
+    thumbs.forEach(x => x.classList.remove("is-active")); t.classList.add("is-active");
+    main.src = t.dataset.src; main.alt = t.dataset.alt;
+  }));
 })();

@@ -53,6 +53,40 @@ FAQ = [
   ("Where does Jolt operate?", "Jolt installs stations across Ireland and the UK today. Businesses in the EU can join our priority list for onboarding as we expand, and businesses elsewhere can join the waitlist."),
 ]
 
+
+# Station range (from "Jolt-all units in inventory.pdf"). Names are descriptive; rename to Jolt's own model names if they differ.
+STATIONS = [
+  {"slug": "countertop-8-white", "name": "Countertop 8", "finish": "White", "type": "Countertop", "banks": 8,
+   "tag": "Small cafés, salons, reception desks",
+   "blurb": "Our most compact station. Eight power banks and a touchscreen in a unit that sits beside the till. The white finish suits bright cafés, clinics and hotel receptions.",
+   "specs": [("Power banks", "8"), ("Unit size", "23.8 × 22 cm footprint, 23.7 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+  {"slug": "countertop-8-black", "name": "Countertop 8", "finish": "Black", "type": "Countertop", "banks": 8,
+   "tag": "Bars, restaurants, smaller venues",
+   "blurb": "The same compact eight-bank station in black, with green light rings around each bay. Fits on a bar top or beside the till without taking over the space.",
+   "specs": [("Power banks", "8"), ("Unit size", "23.8 × 22 cm footprint, 23.7 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+  {"slug": "countertop-12", "name": "Countertop 12", "finish": "Black", "type": "Countertop", "banks": 12,
+   "tag": "Busy pubs, hotel bars, gyms",
+   "blurb": "Twelve power banks on the same small footprint as the Countertop 8, with an extra bay level. The go-to station for busy pubs and hotel bars.",
+   "specs": [("Power banks", "12"), ("Unit size", "23.8 × 22 cm footprint, 31.2 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+  {"slug": "slim-kiosk-24", "name": "Slim Kiosk 24", "finish": "Black", "type": "Floor-standing", "banks": 24,
+   "tag": "Nightclubs, shopping centres, hotel lobbies",
+   "blurb": "A slim floor-standing kiosk with 24 power banks, a portrait screen and tap-to-pay. Takes up less floor space than a bar stool.",
+   "specs": [("Power banks", "24"), ("Height", "180 cm"), ("Footprint", "35.5 × 43.5 cm base"), ("Screen", "52.8 cm portrait display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
+  {"slug": "secure-locker-24", "name": "Secure Locker 24", "finish": "Black", "type": "Floor-standing", "banks": 24,
+   "tag": "Hospitals, transport hubs, unattended areas",
+   "blurb": "24 power banks behind three lockable bays, with a card terminal on the side. Built for public areas and places where the station isn't always in view of staff.",
+   "specs": [("Power banks", "24, in 3 lockable bays"), ("Height", "180 cm"), ("Footprint", "52 × 32 cm base"), ("Screen", "52.6 cm portrait display"), ("Payment", "Integrated card terminal")]},
+  {"slug": "media-kiosk-48", "name": "Media Kiosk 48", "finish": "Black", "type": "Floor-standing", "banks": 48,
+   "tag": "Stadiums, airports, large venues",
+   "blurb": "Our highest-capacity kiosk, with 48 power banks and a large 94 cm display that can run your own promotions between rental instructions.",
+   "specs": [("Power banks", "48"), ("Height", "205 cm"), ("Footprint", "58.3 × 50 cm base"), ("Screen", "94.3 cm portrait display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
+  {"slug": "tower-48", "name": "Tower 48", "finish": "Black / teal light", "type": "Floor-standing", "banks": 48,
+   "tag": "Festivals, events, large nightclubs",
+   "blurb": "48 power banks in a tower with a teal light band, so guests can spot it across a dark, crowded room. Tap-to-pay and a landscape screen at eye level.",
+   "specs": [("Power banks", "48"), ("Height", "174.4 cm"), ("Footprint", "51 × 52.1 cm base"), ("Screen", "47.8 × 26 cm landscape display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
+]
+ST = {x["slug"]: x for x in STATIONS}
+
 e = html.escape
 
 def load_testimonials():
@@ -83,8 +117,8 @@ def conveyor(items_html, cls, reverse=False):
     return (f'<div class="conveyor {cls}{" reverse" if reverse else ""}"><div class="conveyor-track">'
             f'{items_html}<div class="conveyor-dup" aria-hidden="true">{items_html}</div></div></div>')
 
-def head(key):
-    P = PAGES[key]
+def head(key, P=None):
+    P = P or PAGES[key]
     alts = "".join(f'<link rel="alternate" hreflang="{PAGES[k]["lang"].lower()}" href="{DOMAIN}{PAGES[k]["path"]}">' for k in ("ie", "uk"))
     alts += f'<link rel="alternate" hreflang="x-default" href="{DOMAIN}/">'
     ld_org = {"@context": "https://schema.org", "@type": "Organization", "name": "Jolt", "legalName": "Jolt Ireland Technology Ltd",
@@ -100,7 +134,7 @@ def head(key):
 <title>{P["title"]}</title>
 <meta name="description" content="{P["desc"]}">
 <link rel="canonical" href="{DOMAIN}{P["path"]}">
-{alts}
+{alts if key is not None or P["path"] == "/" else ""}
 <meta property="og:type" content="website"><meta property="og:title" content="{P["title"]}"><meta property="og:description" content="{P["desc"]}"><meta property="og:url" content="{DOMAIN}{P["path"]}">
 <meta name="theme-color" content="#050505">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
@@ -114,13 +148,14 @@ def head(key):
 
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
-<nav class="links"><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
-<div class="nav-cta"><a class="btn btn-green sm" href="#setup-card">Get a free station</a></div>
+<nav class="links"><a href="/stations/">Stations</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
+<div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a></div>
 </div></header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
 <div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
+<div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
 <div><h4>Customers</h4><a href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
 </div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
@@ -154,9 +189,10 @@ def setup_card(preset):
 <div class="setup-meter" aria-hidden="true">{"".join('<i></i>' for _ in range(12))}</div>
 <div class="setup-result" id="setup-result" aria-live="polite">
 <span class="setup-result__label" id="setup-label">Recommended setup</span>
-<span class="setup-result__name" id="setup-name">Standard station</span>
+<span class="setup-result__name" id="setup-name">Countertop 12</span>
 <span class="setup-result__price" id="setup-price">Cost to you: <strong>€0</strong></span>
 <span class="setup-result__inc" id="setup-inc">Installed free · we keep it stocked · you earn a revenue share</span>
+<a class="setup-result__link" id="setup-link" href="/stations/countertop-12/">See this station →</a>
 </div>
 <div class="setup-capture">
 <span class="setup-step"><span class="setup-step__num">4</span> <span id="setup-q4">Where should we send your setup?</span></span>
@@ -166,7 +202,9 @@ def setup_card(preset):
 <input type="hidden" name="lead_status" id="setup-h-status" value="">
 <input type="hidden" name="venues" id="setup-h-venues" value="1">
 <input type="hidden" name="weekly_customers" id="setup-h-customers" value="500">
-<input type="hidden" name="recommended" id="setup-h-rec" value="Standard station">
+<input type="hidden" name="recommended" id="setup-h-rec" value="Countertop 12">
+<input type="hidden" name="station_interest" id="setup-h-station" value="">
+<div class="setup-interest" id="setup-interest" hidden></div>
 <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
 <div class="setup-form__grid">
 <input type="text" name="business" class="setup-form__input" placeholder="Business name" required autocomplete="organization" aria-label="Business name">
@@ -213,7 +251,12 @@ def page(key):
 <div><b>0</b><span>cost to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>
 </div></section>
 
-<section id="how" class="sec"><div class="wrap">
+<section id="stations" class="sec"><div class="wrap">
+<div class="sec-head"><h2>Our stations</h2><a class="textlink" href="/stations/">See all {len(STATIONS)} stations →</a></div>
+<div class="st-grid">{"".join(station_card(ST[k]) for k in ("countertop-8-white", "countertop-12", "slim-kiosk-24", "tower-48"))}</div>
+</div></section>
+
+<section id="how" class="sec alt"><div class="wrap">
 <h2>How it works for your venue</h2>
 <ol class="steps">
 <li><b>01</b><h3>Tell us about your venue</h3><p>Fill in the four quick steps above. We'll come back to you within one working day.</p></li>
@@ -223,16 +266,71 @@ def page(key):
 </ol>
 </div></section>
 
-<section id="venues" class="sec alt"><div class="wrap">
+<section id="venues" class="sec"><div class="wrap">
 <h2>Built for busy venues</h2>
 <div class="grid">{venues}</div>
 <p class="center-cta"><a class="btn btn-green" href="#setup-card">See your free setup</a></p>
 </div></section>
 
-<section id="faq" class="sec"><div class="wrap narrow">
+<section id="faq" class="sec alt"><div class="wrap narrow">
 <h2>Questions venues ask</h2>{faq}
 </div></section>
 </main>''' + FOOTER
+
+
+def station_card(x):
+    return f"""<a class="st-card" href="/stations/{x["slug"]}/">
+<div class="stage"><img src="/assets/stations/{x["slug"]}-angle-sm.webp" alt="Jolt {x["name"]} power bank station, {x["finish"].lower()}" loading="lazy"></div>
+<div class="st-meta"><span class="st-type">{x["type"]} · {x["finish"]}</span><h3>{x["name"]}</h3>
+<p>{x["tag"]}</p><span class="st-banks"><b>{x["banks"]}</b> power banks</span></div></a>"""
+
+def stations_index():
+    P = {"path": "/stations/", "lang": "en", "title": "Jolt Power Bank Stations | Countertop & Floor-Standing Units",
+         "desc": "The full Jolt station range: countertop units with 8 or 12 power banks and floor-standing kiosks with 24 or 48. Installed free in your venue."}
+    groups = ""
+    for t in ("Countertop", "Floor-standing"):
+        items = "".join(station_card(x) for x in STATIONS if x["type"] == t)
+        groups += f'<h2 class="st-group">{t} stations</h2><div class="st-grid">{items}</div>'
+    return head(None, P) + NAV + f"""
+<main><section class="sec page-top"><div class="wrap">
+<span class="pill">Every station installed free</span>
+<h1 class="page-h1">Our stations</h1>
+<p class="lead">From an 8-bank unit that sits beside the till to a 48-bank tower for festivals. Pick one, or tell us about your venue and we'll recommend the right fit.</p>
+{groups}
+<div class="panel st-help"><div><h3>Not sure which one fits?</h3><p>Answer four quick questions and we'll recommend a station for your venue.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+</div></section></main>""" + FOOTER
+
+def station_page(x):
+    P = {"path": f"/stations/{x['slug']}/", "lang": "en",
+         "title": f"Jolt {x['name']} ({x['finish']}) | {x['banks']}-Bank Power Bank Station",
+         "desc": f"Jolt {x['name']}: {x['banks']} power banks, {x['type'].lower()}. {x['tag']}. Installed free in your venue with a revenue share."}
+    specs = "".join(f"<tr><th>{k}</th><td>{v}</td></tr>" for k, v in x["specs"])
+    others = "".join(station_card(o) for o in STATIONS if o["slug"] != x["slug"] and o["type"] == x["type"])[:99999]
+    ld = {"@context": "https://schema.org", "@type": "Product", "name": f"Jolt {x['name']}", "brand": {"@type": "Brand", "name": "Jolt"},
+          "image": f"{DOMAIN}/assets/stations/{x['slug']}-angle.webp", "description": x["blurb"]}
+    return head(None, P).replace("</head>", f'<script type="application/ld+json">{json.dumps(ld)}</script></head>') + NAV + f"""
+<main><section class="sec page-top"><div class="wrap">
+<p class="crumbs"><a href="/stations/">Stations</a> / {x["name"]}</p>
+<div class="st-detail">
+<div class="st-gallery">
+<div class="stage big"><img id="st-main" src="/assets/stations/{x["slug"]}-angle.webp" alt="Jolt {x["name"]}, angled view"></div>
+<div class="st-thumbs">
+<button type="button" class="st-thumb is-active" data-src="/assets/stations/{x["slug"]}-angle.webp" data-alt="Jolt {x["name"]}, angled view"><img src="/assets/stations/{x["slug"]}-angle-sm.webp" alt=""><span>Angled</span></button>
+<button type="button" class="st-thumb" data-src="/assets/stations/{x["slug"]}-front.webp" data-alt="Jolt {x["name"]}, front view"><img src="/assets/stations/{x["slug"]}-front-sm.webp" alt=""><span>Front</span></button>
+</div></div>
+<div class="st-info">
+<span class="st-type">{x["type"]} · {x["finish"]}</span>
+<h1 class="page-h1">{x["name"]}</h1>
+<p class="st-banks big"><b>{x["banks"]}</b> power banks</p>
+<p class="lead">{x["blurb"]}</p>
+<p class="st-best"><b>Best for:</b> {x["tag"]}</p>
+<table class="specs">{specs}<tr><th>Cost to your venue</th><td class="g">Free, including installation and maintenance</td></tr></table>
+<div class="hero-ctas"><a class="btn btn-green" href="/?station={x["slug"]}#setup-card">Request this station</a><a class="btn btn-ghost" href="https://wa.me/{WHATSAPP}?text={html.escape("Hi, I'm interested in the Jolt " + x["name"] + " for my venue").replace(" ", "%20")}">Ask on WhatsApp</a></div>
+<ul class="ticks"><li>Installed free</li><li>We keep it stocked and maintained</li><li>You earn a share of every rental</li></ul>
+</div></div>
+</div></section>
+<section class="sec alt"><div class="wrap"><div class="sec-head"><h2>Other {x["type"].lower()} stations</h2><a class="textlink" href="/stations/">All stations →</a></div><div class="st-grid">{others}</div></div></section>
+</main>""" + FOOTER
 
 def thanks_page():
     return head(None).replace(f'<link rel="canonical" href="{DOMAIN}/">', f'<link rel="canonical" href="{DOMAIN}/thank-you/"><meta name="robots" content="noindex">') + NAV + f'''
@@ -252,6 +350,9 @@ write("index.html", page(None))
 write("ie/index.html", page("ie"))
 write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
+write("stations/index.html", stations_index())
+for x in STATIONS:
+    write(f"stations/{x['slug']}/index.html", station_page(x))
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
 for k in (None, "ie", "uk"):
@@ -259,5 +360,7 @@ for k in (None, "ie", "uk"):
     for a in ("ie", "uk"):
         sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
+for u in ["/stations/"] + [f"/stations/{x['slug']}/" for x in STATIONS]:
+    sm += f"<url><loc>{DOMAIN}{u}</loc></url>\n"
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)
