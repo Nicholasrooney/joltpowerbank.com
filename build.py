@@ -249,7 +249,7 @@ def page(key):
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations.</h1>
 <p class="lead">We install and maintain it, and you earn a share of every rental.</p>
-<figure class="hero-map"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><figcaption><i></i>Live on the Jolt app · Dublin</figcaption></figure>
+<figure class="hero-map"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><figcaption><i></i><span class="long">Live on the Jolt app · Dublin</span><span class="short">Live · Dublin</span></figcaption></figure>
 </div>
 <div class="brands" id="brands" data-design="1">
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
