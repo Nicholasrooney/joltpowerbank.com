@@ -178,27 +178,31 @@ const WHATSAPP = "353870365888";
     : `<div class="bt bt-name ${cls}"><span>${esc(v.name)}</span><i>${SHORT[v.category] || ""}</i></div>`;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const makeDesigns = stage => ({
-    /* 1. Drum: a horizontal cylinder rolling toward the viewer; faces are refilled while they're out of sight */
+    /* 1. Drum: the runway's flow, curved over a big cylinder. Rows come over the crest and roll down toward you.
+          Same 4 columns, tile size and surface speed as the runway; rows are refilled while they're out of sight. */
     1() {
-      const FACES = 18, PER = 4, STEP = 360 / FACES;
-      const faceH = 78, r = faceH / (2 * Math.tan(Math.PI / FACES));
-      stage.innerHTML = `<div class="drum-wrap"><div class="drum" style="--r:${r}px"></div></div>`;
+      const FACES = 20, PER = 4, STEP = 360 / FACES;
+      const W = stage.clientWidth, H = stage.clientHeight;
+      const DW = W * 1.16, colW = (DW - 3 * 10) / 4, faceH = colW * 5 / 9 + 10, PUSH = 170;   // wider drum, pushed back for depth           // tile 9:5 + 10px gap, like the runway
+      const r = faceH / (2 * Math.tan(Math.PI / FACES));
+      stage.innerHTML = `<div class="drum-wrap"><div class="drum" style="height:${faceH}px;width:${DW}px;left:${(W - DW) / 2}px;top:${H - faceH * 1.05}px"></div></div>`;
       const drum = stage.querySelector(".drum");
       let next = 0; const take = () => { const out = []; for (let k = 0; k < PER; k++) out.push(MIX[next++ % MIX.length]); return out; };
       const faces = [];
       for (let i = 0; i < FACES; i++) {
-        const f = document.createElement("div"); f.className = "drum-face"; f.style.height = faceH + "px";
+        const f = document.createElement("div"); f.className = "drum-face";
         f.style.transform = `rotateX(${i * STEP}deg) translateZ(${r}px)`; f.innerHTML = take().map(v => tile(v)).join("");
         drum.appendChild(f); faces.push({ el: f, base: i * STEP, back: false });
       }
+      const degPerMs = (50 / r) * (180 / Math.PI) / 1000;                      // 50px/s along the surface = runway speed
       let angle = 0, last = performance.now(), raf;
       const loop = t => {
-        const dt = Math.min(50, t - last); last = t; if (!reduce) angle -= dt * 0.012;   // negative = front face moves down, toward you
-        drum.style.transform = `translateZ(${-r}px) rotateX(${angle}deg)`;
+        const dt = Math.min(50, t - last); last = t; if (!reduce) angle -= dt * degPerMs;
+        drum.style.transform = `translateZ(${-r - PUSH}px) rotateX(${angle}deg)`;
         faces.forEach(f => {
-          const a = ((f.base + angle) % 360 + 360) % 360;                 // 0 = facing viewer
-          const isBack = a > 120 && a < 240;
-          if (isBack && !f.back) f.el.innerHTML = take().map(v => tile(v)).join("");   // refill unseen faces with the next venues
+          const a = ((f.base + angle) % 360 + 360) % 360;
+          const isBack = a > 110 && a < 250;
+          if (isBack && !f.back) f.el.innerHTML = take().map(v => tile(v)).join("");
           f.back = isBack;
         });
         raf = requestAnimationFrame(loop);
