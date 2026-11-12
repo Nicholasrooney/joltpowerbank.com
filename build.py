@@ -240,7 +240,6 @@ def setup_card(preset):
 <button type="submit" class="btn btn-green full" id="setup-submit">Get my free station</button>
 <p class="form-msg" role="status"></p>
 </form>
-<p class="setup-capture__reassure" id="setup-reassure">We'll call you within one working day · free install · no spam</p>
 </div>
 </div>'''
 

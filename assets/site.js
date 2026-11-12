@@ -164,7 +164,7 @@ const WHATSAPP = "353870365888";
     const needCountry = market === "EU" || market === "INTL";
     country.hidden = !needCountry; country.required = needCountry;
     submit.textContent = M.button;
-    $("#setup-reassure").textContent = M.reassure;
+    const rs = $("#setup-reassure"); if (rs) rs.textContent = M.reassure;
     const lit = Math.max(1, Math.round((pos / 600) * bars.length));
     bars.forEach((b, i) => b.classList.toggle("on", i < lit));
     $("#setup-h-market").value = market; $("#setup-h-status").value = M.status;
