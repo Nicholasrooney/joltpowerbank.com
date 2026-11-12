@@ -276,6 +276,19 @@ def page(key):
 <li><b>03</b><h3>Customers rent and return</h3><p>Customers scan, pay by card or app, and return to any Jolt station. Fees are settled automatically.</p></li>
 <li><b>04</b><h3>You earn a share</h3><p>Your venue receives a share of the rental revenue. We handle stock, maintenance and support.</p></li>
 </ol>
+<div class="app-proof">
+<div class="app-proof-copy">
+<span class="pill">Live on the Jolt app</span>
+<h3>A network your customers already use</h3>
+<p>Every station appears on the Jolt app map, with live power bank availability. These are real screenshots of the network across Dublin and London: each green pin is a venue with a Jolt station.</p>
+<p class="muted">Once your station is installed, your venue appears on the map too, so customers nearby can find you.</p>
+<a class="btn btn-green" href="#setup-card">Get your venue on the map</a>
+</div>
+<div class="app-phones">
+<figure class="phone"><div class="phone-screen"><img src="/assets/app/map-dublin.webp" alt="Jolt app map showing hundreds of Jolt stations across Dublin" loading="lazy"></div><figcaption>Dublin</figcaption></figure>
+<figure class="phone"><div class="phone-screen"><img src="/assets/app/map-london.webp" alt="Jolt app map showing Jolt stations across London" loading="lazy"></div><figcaption>London</figcaption></figure>
+</div>
+</div>
 </div></section>
 
 <section id="venues" class="sec"><div class="wrap">
