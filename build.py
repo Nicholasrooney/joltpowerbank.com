@@ -246,15 +246,14 @@ def page(key):
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
-<h1>Free power bank stations. <em>Zero cost to your venue.</em></h1>
+<h1>Free power bank stations.</h1>
 <p class="lead">We install it, keep it stocked and maintain it. Your customers rent a charger in seconds. You earn a share of every rental.</p>
 <div class="brands" id="brands" data-design="1">
-<div class="brands-head"><span class="brands-count"><b>{len(V)}</b> venues already use Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland</span></div>
+<div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
 <script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>
 </div>
-<p class="proof-label">What venues say</p>
-{conveyor(row1, "tconv")}
+<!-- testimonials strip removed for now; re-add: conveyor(row1, "tconv") -->
 </div>
 {setup_card(P["market"])}
 </div></section>
@@ -355,8 +354,8 @@ DESIGN_INFO = [
 
 def customers_page():
     V = load_venues()
-    P = {"path": "/customers/", "lang": "en", "title": f"Our Customers | {len(V)} Venues Using Jolt Power Bank Stations",
-         "desc": f"{len(V)} pubs, hotels, hospitals, nightclubs and venues across Ireland already use Jolt power bank stations."}
+    P = {"path": "/customers/", "lang": "en", "title": "Our Customers | 4,000+ Venues Have Used Jolt Power Bank Stations",
+         "desc": "Over 4,000 pubs, hotels, hospitals, nightclubs and venues across Ireland and the UK have already used Jolt power bank stations."}
     data = f'<script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>'
     blocks = "".join(f"""<section class="cust-design" id="design-{n}"><div class="cust-design-head"><span class="cust-num">Option {n}</span><h2>{name}</h2><p>{desc}</p></div>
 <div class="brands" data-fixed data-design="{n}"><div class="brand-stage" aria-label="Venues that use Jolt, {name.lower()} layout"></div></div></section>""" for n, name, desc in DESIGN_INFO)
@@ -369,11 +368,11 @@ def customers_page():
 <main><section class="sec page-top"><div class="wrap">
 <span class="pill">Ireland's busiest venues</span>
 <h1 class="page-h1">Our customers</h1>
-<p class="lead"><b class="g">{len(V)} venues</b> already use Jolt: pubs, hotels, hospitals, nightclubs, stadiums and more.</p>
+<p class="lead"><b class="g">Over 4,000 venues</b> have already used Jolt: pubs, hotels, hospitals, nightclubs, stadiums and more. Here are some of them.</p>
 <div class="cust-jump"><span>Showcase options:</span>{jump}</div>
 {data}
 {blocks}
-<section class="cust-dir" id="directory"><h2>Every venue, by type</h2>{directory}</section>
+<section class="cust-dir" id="directory"><h2>A selection of our venues, by type</h2>{directory}</section>
 <div class="panel st-help"><div><h3>Want your venue on this list?</h3><p>Stations are installed free, and you earn a share of every rental.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
