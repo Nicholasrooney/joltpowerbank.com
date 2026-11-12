@@ -160,13 +160,13 @@ def head(key, P=None):
 
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
-<nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
+<nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
 <div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a></div>
 </div></header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
-<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
+<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/areas/soho-london/">Soho</a><a href="/areas/kensington-london/">Kensington</a><a href="/areas/belfast/">Belfast</a><a href="/areas/limerick/">Limerick</a><a href="/areas/">All areas</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
 <div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/customers/">Our customers</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
 <div><h4>Customers</h4><a class="app-link" href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
@@ -400,6 +400,114 @@ def customers_page():
 <div class="panel st-help"><div><h3>Want your venue on this list?</h3><p>Stations are installed free, and you earn a share of every rental.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
+# Area landing pages (local SEO). Copy only describes what the app map shows; add real local venues when Jolt confirms them.
+AREAS = [
+  {"slug": "soho-london", "name": "Soho", "city": "London", "market": "UK", "lang": "en-GB", "map": "soho",
+   "spots": "Dean Street, Brewer Street, Beak Street and Chinatown",
+   "intro": "Soho never really switches off, and neither do your customers' phones. Jolt already has stations across Soho and the West End, so people out for the evening know where to find a charge.",
+   "venues": "late bars, restaurants, theatres and members' clubs",
+   "near": "Fitzrovia, Covent Garden and Piccadilly"},
+  {"slug": "kensington-london", "name": "Kensington", "city": "London", "market": "UK", "lang": "en-GB", "map": "kensington",
+   "spots": "Notting Hill, Kensington and Earl's Court",
+   "intro": "From hotels near the museums to pubs and restaurants around Notting Hill, Kensington has a steady flow of visitors who spend the whole day out. A Jolt station keeps them in your venue instead of heading home to charge.",
+   "venues": "hotels, pubs, restaurants and visitor attractions",
+   "near": "Notting Hill, South Kensington and Earl's Court"},
+  {"slug": "belfast", "name": "Belfast", "city": "Northern Ireland", "market": "UK", "lang": "en-GB", "map": "belfast",
+   "spots": "the Cathedral Quarter, the city centre and the Queen's Quarter",
+   "intro": "Jolt is already live across Belfast, from the Cathedral Quarter to the Queen's Quarter. Customers can rent a power bank in one venue and return it in another across the city, or across the border.",
+   "venues": "bars, hotels, restaurants and event venues",
+   "near": "the Cathedral Quarter, Queen's Quarter and west Belfast"},
+  {"slug": "limerick", "name": "Limerick", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "limerick",
+   "spots": "the city centre, King John's Castle and the riverside",
+   "intro": "Jolt stations are already in Limerick city, from around King John's Castle to the riverside. Match days, nights out and long shopping days all end with flat phones, and that is when customers look for a station.",
+   "venues": "pubs, hotels, restaurants and match-day venues",
+   "near": "the city centre, Ballinacurra and Dooradoyle"},
+  {"slug": "galway", "name": "Galway", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "galway",
+   "spots": "the city centre, the Spanish Arch, the University of Galway and Salthill",
+   "intro": "Galway's pubs, festivals and student nights keep phones busy until late. Jolt is already live from the Spanish Arch to the University of Galway and out to Salthill.",
+   "venues": "pubs, hotels, restaurants and student venues",
+   "near": "the city centre, the university and Salthill"},
+  {"slug": "cork", "name": "Cork", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "cork",
+   "spots": "the city centre, Wilton, Douglas and along the River Lee",
+   "intro": "Jolt is one of the most visible charging networks in Cork, with stations right across the city centre and out to Wilton and Douglas. Customers already know to look for one.",
+   "venues": "pubs, hotels, shopping centres and hospitals",
+   "near": "the city centre, Wilton and Douglas"},
+  {"slug": "bray", "name": "Bray", "city": "Co. Wicklow", "market": "IE", "lang": "en-IE", "map": "bray",
+   "spots": "the seafront, Main Street and Old Connaught",
+   "intro": "From the seafront to Main Street, Jolt is already live across Bray. Day-trippers walking the promenade and the cliff walk are exactly the people who run out of battery.",
+   "venues": "seafront bars, cafés, restaurants and hotels",
+   "near": "the seafront, Greystones and south Dublin"},
+  {"slug": "greystones", "name": "Greystones", "city": "Co. Wicklow", "market": "IE", "lang": "en-IE", "map": "greystones",
+   "spots": "the harbour, Church Road and Kilcoole Road",
+   "intro": "Jolt is already in Greystones, from the harbour along the main street to the south of the town. Customers can rent here and return in Bray, Dublin or anywhere on the network.",
+   "venues": "cafés, pubs, restaurants and harbour venues",
+   "near": "Bray, Wicklow town and Dublin"},
+  {"slug": "wicklow", "name": "Wicklow", "city": "Co. Wicklow", "market": "IE", "lang": "en-IE", "map": "wicklow",
+   "spots": "Main Street and the harbour",
+   "intro": "Jolt is already live in Wicklow town, along Main Street and down by the harbour. Visitors exploring the coast and the gaol need a charge before the trip home.",
+   "venues": "pubs, hotels, cafés and visitor attractions",
+   "near": "Greystones, Bray and Dublin"},
+]
+
+def area_page(a):
+    cur = "£" if a["market"] == "UK" else "€"
+    P = {"path": f"/areas/{a['slug']}/", "lang": a["lang"],
+         "title": f"Free Power Bank Stations for Venues in {a['name']} | Jolt",
+         "desc": f"Get a free Jolt power bank station for your venue in {a['name']}. Jolt is already live across {a['spots']}. No cost, revenue share, installed and maintained."}
+    ld = {"@context": "https://schema.org", "@type": "Service", "name": f"Power bank rental stations for venues in {a['name']}",
+          "provider": {"@type": "Organization", "name": "Jolt", "url": DOMAIN},
+          "areaServed": {"@type": "Place", "name": f"{a['name']}, {a['city']}"},
+          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP" if a["market"] == "UK" else "EUR", "description": "Free installation and maintenance with a revenue share"}}
+    others = "".join(f'<a class="area-chip" href="/areas/{o["slug"]}/">{o["name"]}</a>' for o in AREAS if o["slug"] != a["slug"])
+    faq = "".join(f'<details><summary>{q}</summary><p>{x}</p></details>' for q, x in FAQ[:4])
+    return head(None, P).replace("</head>", f'<script type="application/ld+json">{json.dumps(ld)}</script></head>') + NAV + f"""
+<main>
+<section class="hero"><div class="wrap hero-in">
+<div class="hero-copy">
+<p class="crumbs"><a href="/">Jolt</a> / <a href="/areas/">Areas</a> / {a["name"]}</p>
+<span class="pill">Live in {a["name"]}</span>
+<h1>Free power bank stations in {a["name"]}.</h1>
+<p class="lead">{a["intro"]}</p>
+<ul class="ticks"><li>No cost to your venue: {cur}0 to install</li><li>We install, stock and maintain it</li><li>You earn a share of every rental</li></ul>
+<a class="area-map app-link" href="{APP_URL}" aria-label="Open the Jolt app"><img src="/assets/app/map-{a["map"]}.webp" alt="Jolt app map showing Jolt stations in {a['name']}" loading="lazy"><span class="hero-map-cap"><i></i>Live on the Jolt app · {a["name"]}</span></a>
+</div>
+{setup_card(a["market"])}
+</div></section>
+
+<section class="sec alt"><div class="wrap">
+<h2>Why venues in {a["name"]} choose Jolt</h2>
+<div class="grid">
+<article class="card"><h3>Already on the map</h3><p>Jolt is live across {a["spots"]}. People nearby already use the app to find a station, and your venue joins that map.</p></article>
+<article class="card"><h3>Built for {a["name"]}'s venues</h3><p>A good fit for {a["venues"]}: anywhere customers stay a while and need their phone working when they leave.</p></article>
+<article class="card"><h3>Rent here, return anywhere</h3><p>Customers can return a power bank to any Jolt station, including across {a["near"]}, which makes them more likely to rent.</p></article>
+</div>
+<p class="center-cta"><a class="btn btn-green" href="#setup-card">Get a free station in {a["name"]}</a></p>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><h2>Stations we install</h2><a class="textlink" href="/stations/">See all {len(STATIONS)} stations →</a></div>
+<div class="st-grid">{"".join(station_card(ST[k]) for k in ("countertop-8-white", "countertop-12", "slim-kiosk-24", "tower-48"))}</div>
+</div></section>
+
+<section class="sec alt"><div class="wrap narrow">
+<h2>Questions venues in {a["name"]} ask</h2>{faq}
+<p class="area-others"><span>Other areas:</span>{others}</p>
+</div></section>
+</main>""" + FOOTER
+
+def areas_index():
+    P = {"path": "/areas/", "lang": "en", "title": "Areas | Jolt Power Bank Stations in Ireland & the UK",
+         "desc": "Jolt power bank stations are live across Ireland and the UK. Find your area and get a free station for your venue."}
+    cards = "".join(f'<a class="st-card area-card" href="/areas/{a["slug"]}/"><div class="area-thumb"><img src="/assets/app/map-{a["map"]}.webp" alt="Jolt stations in {a["name"]}" loading="lazy"></div><div class="st-meta"><span class="st-type">{a["city"]}</span><h3>{a["name"]}</h3><p>Live across {a["spots"]}.</p></div></a>' for a in AREAS)
+    return head(None, P) + NAV + f"""
+<main><section class="sec page-top"><div class="wrap">
+<span class="pill">4,000+ locations</span>
+<h1 class="page-h1">Jolt near you</h1>
+<p class="lead">Jolt is live across Ireland and the UK. Pick your area to see the network there and get a free station for your venue.</p>
+<div class="st-grid">{cards}</div>
+<div class="panel st-help"><div><h3>Don't see your area?</h3><p>We're expanding fast. Tell us about your venue and we'll let you know when we can install.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+</div></section></main>""" + FOOTER
+
 def thanks_page():
     return head(None).replace(f'<link rel="canonical" href="{DOMAIN}/">', f'<link rel="canonical" href="{DOMAIN}/thank-you/"><meta name="robots" content="noindex">') + NAV + f'''
 <main><section class="hero root"><div class="wrap narrow">
@@ -420,6 +528,9 @@ write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
 write("stations/index.html", stations_index())
 write("customers/index.html", customers_page())
+write("areas/index.html", areas_index())
+for a in AREAS:
+    write(f"areas/{a['slug']}/index.html", area_page(a))
 for x in STATIONS:
     write(f"stations/{x['slug']}/index.html", station_page(x))
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
@@ -429,7 +540,7 @@ for k in (None, "ie", "uk"):
     for a in ("ie", "uk"):
         sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
-for u in ["/stations/", "/customers/"] + [f"/stations/{x['slug']}/" for x in STATIONS]:
+for u in ["/stations/", "/customers/", "/areas/"] + [f"/areas/{a['slug']}/" for a in AREAS] + [f"/stations/{x['slug']}/" for x in STATIONS]:
     sm += f"<url><loc>{DOMAIN}{u}</loc></url>\n"
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)
