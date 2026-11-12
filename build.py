@@ -165,12 +165,13 @@ def head(key, P=None):
 </head>
 <body>'''
 
+import examples as EX
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
 <nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
-<div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button></div>
+<div class="nav-cta">{EX.nav_dropdown()}<a class="btn btn-green sm" href="/#setup-card">Get a free station</a><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button></div>
 </div>
-<nav class="mobile-menu" id="mobile-menu" hidden><a href="/">Home</a><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a><a class="app-link" href="{APP_URL}">Find a power bank</a></nav>
+<nav class="mobile-menu" id="mobile-menu" hidden><a href="/">Home</a><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a><a class="app-link" href="{APP_URL}">Find a power bank</a>{EX.mobile_links()}</nav>
 </header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
@@ -585,6 +586,7 @@ for a in AREAS:
     write(f"areas/{a['slug']}/index.html", area_page(a))
 for x in STATIONS:
     write(f"stations/{x['slug']}/index.html", station_page(x))
+EX.build(write, STATIONS, IOS_URL, ANDROID_URL)
 # Google Search Console verification file (must stay at the site root)
 import shutil
 shutil.copy(os.path.join(HERE, "static_google033f461ff1ae5955.html"), os.path.join(OUT, "google033f461ff1ae5955.html"))

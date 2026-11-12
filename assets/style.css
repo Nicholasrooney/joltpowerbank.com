@@ -396,3 +396,17 @@ a.hero-map:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,0,0,.6
 .specs-src{font-size:.8rem;color:var(--muted,#9aa39a);margin:.6rem 0 1.2rem}
 .st-detail .stage.big img,.st-card .stage img{object-fit:contain;object-position:center}
 .brand-stage[hidden]{display:none!important}
+/* ===== Examples dropdown (top right) ===== */
+.nav-cta{display:flex;align-items:center;gap:.6rem}
+.exdd{position:relative}
+.exdd summary{list-style:none;cursor:pointer;padding:.6rem .9rem;border:1px solid var(--line);border-radius:10px;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#d8e0d8;background:#0c0f0c;user-select:none}
+.exdd summary::-webkit-details-marker{display:none}
+.exdd summary:after{content:" ▾";color:var(--green)}
+.exdd[open] summary{border-color:var(--green)}
+.exdd-menu{position:absolute;right:0;top:calc(100% + 8px);min-width:250px;background:#0b0e0b;border:1px solid var(--line);border-radius:14px;padding:.4rem;box-shadow:0 20px 50px rgba(0,0,0,.6);z-index:200}
+.exdd-menu a{display:block;padding:.65rem .8rem;border-radius:8px;color:#e6ece6;text-decoration:none;font-size:.88rem}
+.exdd-menu a:hover{background:#141a14;color:var(--green)}
+.exdd-menu a.all{border-top:1px solid var(--line);margin-top:.3rem;padding-top:.8rem;color:var(--green);font-size:.8rem}
+.mobile-menu .mm-label{padding:1rem 1.4rem .4rem;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#7d887d}
+.mobile-menu a.mm-ex{text-transform:none;letter-spacing:0;font-size:.95rem;padding:.75rem 1.4rem}
+@media(max-width:900px){.exdd{display:none}}
