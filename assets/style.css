@@ -1,3 +1,11 @@
+/* self-hosted fonts (no request to Google before consent) */
+@font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/inter-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/inter-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/inter-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/archivo-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/archivo-latin-700-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-style:normal;font-weight:900;font-display:swap;src:url(/assets/fonts/archivo-latin-900-normal.woff2) format("woff2")}
+@font-face{font-family:Archivo;font-style:italic;font-weight:900;font-display:swap;src:url(/assets/fonts/archivo-latin-900-italic.woff2) format("woff2")}
 :root{--bg:#050505;--bg2:#0d0f0d;--line:#1c211c;--text:#f2f5f2;--muted:#8e988e;--green:#39ff6a;--green2:#12c44a;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -347,3 +355,15 @@ a.hero-map:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,0,0,.6
 .cookie-bar p{font-size:.85rem;color:#c9d1c9;margin:0}
 .cookie-btns{display:flex;gap:.5rem;flex:none}
 @media(max-width:560px){.cookie-bar{flex-direction:column;align-items:stretch;text-align:center}.cookie-btns .btn{flex:1}}
+/* cookie buttons: same weight for Accept and Reject */
+.btn-cookie{background:#e9efe9;color:#061006;border:1px solid #e9efe9;min-width:96px}
+.btn-cookie:hover{background:#fff}
+.cookie-bar a{color:var(--green)}
+/* privacy page */
+.legal-doc h2{font-size:1.3rem;margin:2.2rem 0 .7rem;text-transform:none}
+.legal-doc p,.legal-doc li{color:#c9d1c9;margin-bottom:.7rem}
+.legal-doc ul{padding-left:1.2rem}
+.legal-doc table{width:100%;border-collapse:collapse;margin:1rem 0}
+.legal-doc th,.legal-doc td{text-align:left;padding:.6rem .5rem;border-bottom:1px solid var(--line);font-size:.9rem;vertical-align:top}
+.legal-doc th{color:var(--muted);font-weight:500}
+.draft-note{border:1px dashed #b38b2a;color:#e8c46a;border-radius:12px;padding:.8rem 1rem;font-size:.85rem;margin:1rem 0 2rem}

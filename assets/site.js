@@ -1,3 +1,65 @@
+/* ---------- Tracking: our own cookie-free counter (track.php) for every visitor, plus Google (only if cookies accepted) ---------- */
+(function () {
+  const q = new URLSearchParams(location.search);
+  const base = {
+    p: location.pathname, ref: document.referrer || "",
+    us: q.get("utm_source") || "", um: q.get("utm_medium") || "", uc: q.get("utm_campaign") || "",
+    clid: q.get("gclid") ? "gclid" : q.get("fbclid") ? "fbclid" : "",
+    tz: (Intl.DateTimeFormat().resolvedOptions().timeZone || "")
+  };
+  window.track = function (e, l, d, gaParams) {
+    try {
+      const fd = new FormData();
+      Object.entries(Object.assign({}, base, { e, l: l || "", d: d || "" })).forEach(([k, v]) => fd.append(k, v));
+      if (!(navigator.sendBeacon && navigator.sendBeacon("/track.php", fd))) fetch("/track.php", { method: "POST", body: fd, keepalive: true }).catch(() => {});
+    } catch (_) {}
+    if (window.gtag && e !== "page_view") gtag("event", e, Object.assign({ event_label: l || "", detail: d || "" }, gaParams || {}));
+  };
+  track("page_view", document.title.slice(0, 100));
+
+  // every click on a link or button
+  document.addEventListener("click", ev => {
+    const el = ev.target.closest("a, button, [role=radio]"); if (!el) return;
+    const label = (el.dataset.track || el.getAttribute("aria-label") || el.innerText || el.title || "").replace(/\s+/g, " ").trim().slice(0, 80);
+    const href = el.getAttribute("href") || "";
+    const where = el.closest("header") ? "nav" : el.closest("footer") ? "footer" : el.closest("#setup-card") ? "form" : el.closest(".hero") ? "hero" : (el.closest("section[id]") || {}).id || "page";
+    track("click", label, (href ? href.replace(/^https?:\/\/[^/]+/, "") : "button") + " @" + where);
+    if (el.classList.contains("app-link")) {
+      const ua = navigator.userAgent, plat = /Android/i.test(ua) ? "android" : /iPhone|iPad|iPod/i.test(ua) ? "ios" : "desktop";
+      track("app_click", plat, (el.classList.contains("btn-find") ? "find-button" : el.classList.contains("hero-map") ? "hero-map" : el.classList.contains("area-map") ? "area-map" : where));
+    }
+    if (/wa\.me|whatsapp/i.test(href)) track("whatsapp_click", label, where);
+  }, true);
+
+  // scroll depth + engaged time
+  const marks = [25, 50, 75, 100], hit = {};
+  addEventListener("scroll", () => {
+    const h = document.documentElement, pct = (h.scrollTop + innerHeight) / h.scrollHeight * 100;
+    marks.forEach(m => { if (pct >= m - 1 && !hit[m]) { hit[m] = 1; track("scroll", m + "%"); } });
+  }, { passive: true });
+  let shown = 0, t0 = Date.now(), sent = false;
+  const tick = setInterval(() => {
+    if (document.visibilityState === "visible") shown += 1;
+    if (shown >= 30 && !sent) { sent = true; track("engaged", "30s"); clearInterval(tick); }
+  }, 1000);
+
+  // the quote form: seen, each step, each contact field filled
+  addEventListener("DOMContentLoaded", () => {
+    const card = document.getElementById("setup-card"); if (!card) return;
+    new IntersectionObserver((es, o) => es.forEach(x => { if (x.isIntersecting) { track("form_view", location.pathname); o.disconnect(); } }), { threshold: .35 }).observe(card);
+    card.addEventListener("click", ev => {
+      const m = ev.target.closest("#setup-market .setup-pill"); if (m) track("form_step", "1 · market", m.dataset.market);
+      const v = ev.target.closest("#setup-sites .setup-pill"); if (v) track("form_step", "2 · venues", v.dataset.sites);
+    });
+    const sl = card.querySelector("#setup-slider"); if (sl) sl.addEventListener("change", () => track("form_step", "3 · customers", card.querySelector("#setup-count").textContent));
+    let started = false;
+    card.querySelectorAll(".setup-form__input").forEach(f => {
+      f.addEventListener("focus", () => { if (!started) { started = true; track("form_step", "4 · contact started", f.name); } });
+      f.addEventListener("change", () => { if (f.value.trim()) track("form_step", "4 · filled " + f.name, ""); });
+    });
+  });
+})();
+
 /* Lead form handler.
    Set FORM_ENDPOINT to a form backend (e.g. https://formspree.io/f/xxxx) to receive leads by email.
    Until it's set, submissions open WhatsApp with the details pre-filled so no lead is lost. */
@@ -126,11 +188,12 @@ const WHATSAPP = "353870365888";
       const bad = !v || (f.type === "email" && !/^\S+@\S+\.\S+$/.test(v)) || (f.type === "tel" && v.replace(/\D/g, "").length < 7);
       f.classList.toggle("invalid", bad); if (bad) ok = false;
     });
-    if (!ok) { msg.textContent = "Please fill in every field so we can reach you."; msg.className = "form-msg err"; return; }
+    if (!ok) { msg.textContent = "Please fill in every field so we can reach you."; msg.className = "form-msg err"; if (window.track) track("form_error", [...form.querySelectorAll(".invalid")].map(f => f.name).join(","), market); return; }
     msg.textContent = "";
     const data = Object.fromEntries(new FormData(form)); delete data._gotcha;
     if (!country.required) delete data.country;
     data.page = location.pathname;
+    if (window.track) track("lead", data.market + " · " + data.lead_status, "venues " + data.venues + " · " + data.weekly_customers + "/wk · " + data.recommended + (data.station_interest ? " · wants " + data.station_interest : ""), { market: data.market, lead_status: data.lead_status, venues: data.venues });
     if (window.gtag) gtag("event", "generate_lead", { form_id: "setup-hero", market: data.market, lead_status: data.lead_status, venues: data.venues });
     submit.disabled = true; submit.textContent = "Sending…";
     let sent = false;
@@ -346,7 +409,7 @@ const WHATSAPP = "353870365888";
   if (!start) { try { start = localStorage.getItem("jolt-design"); } catch (_) {} }
   show(start || "1");
   document.querySelectorAll("#design-switch button").forEach(b => b.addEventListener("click", () => {
-    show(b.dataset.d);
+    show(b.dataset.d); if (window.track) track("design_switch", b.textContent.trim());
     const r = stage.getBoundingClientRect();                       // bring the showcase into view if it's off screen
     if (r.top < 120 || r.bottom > innerHeight) stage.scrollIntoView({ behavior: "smooth", block: "center" });
     const u = new URL(location.href); u.searchParams.set("design", b.dataset.d); history.replaceState(null, "", u);
@@ -394,7 +457,7 @@ const WHATSAPP = "353870365888";
   document.querySelectorAll(".app-link").forEach(a => {
     a.href = isAndroid ? A.android : A.ios;
     a.addEventListener("click", e => {
-      if (window.gtag) gtag("event", "app_link_click", { platform: isIOS ? "ios" : isAndroid ? "android" : "desktop" });
+      
       if (isIOS || isAndroid || !modal) return;          // phones go straight to their store (it shows "Open" if the app is installed)
       e.preventDefault(); modal.hidden = false;
     });
@@ -406,6 +469,7 @@ const WHATSAPP = "353870365888";
   const bar = document.getElementById("cookie-bar"); if (!bar) return;
   let saved = null; try { saved = localStorage.getItem("jolt-consent"); } catch (_) {}
   if (!saved) bar.hidden = false;
+  document.querySelectorAll(".cookie-settings").forEach(l => l.addEventListener("click", e => { e.preventDefault(); bar.hidden = false; }));
   bar.querySelectorAll("[data-consent]").forEach(b => b.addEventListener("click", () => {
     const v = b.dataset.consent;
     try { localStorage.setItem("jolt-consent", v); } catch (_) {}

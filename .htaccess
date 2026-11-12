@@ -1,3 +1,13 @@
+# Block private folders (stats database, PHP includes)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^(data|includes)(/|$) - [F,L]
+  RewriteRule \.(sqlite|sqlite-wal|sqlite-shm)$ - [F,L]
+</IfModule>
+<FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm)$">
+  Require all denied
+</FilesMatch>
+# jolt-stats
 # Always fetch fresh HTML (so new versions show straight away); CSS/JS/images carry ?v= versions and can be cached long
 <IfModule mod_headers.c>
   <FilesMatch "\.(html)$">

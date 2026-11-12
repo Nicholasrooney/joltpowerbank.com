@@ -150,8 +150,7 @@ def head(key, P=None):
 <meta property="og:type" content="website"><meta property="og:title" content="{P["title"]}"><meta property="og:description" content="{P["desc"]}"><meta property="og:url" content="{DOMAIN}{P["path"]}">
 <meta name="theme-color" content="#050505">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preload" href="/assets/fonts/archivo-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/style.css?v={CSS_V}">
 <!-- Google tag (GTM-W3RCSHQW) with Consent Mode v2: analytics/ads cookies stay off until the visitor accepts -->
 <script>
@@ -174,13 +173,13 @@ NAV = f'''<header class="nav"><div class="wrap nav-in">
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
-<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/areas/soho-london/">Soho</a><a href="/areas/kensington-london/">Kensington</a><a href="/areas/belfast/">Belfast</a><a href="/areas/limerick/">Limerick</a><a href="/areas/">All areas</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
+<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/areas/dublin/">Dublin</a><a href="/areas/london/">London</a><a href="/areas/belfast/">Belfast</a><a href="/areas/cork/">Cork</a><a href="/areas/">All areas</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
 <div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/customers/">Our customers</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
 <div><h4>Customers</h4><a class="app-link" href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
-</div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
+</div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="/privacy/">Privacy &amp; cookies</a> · <a href="#" class="cookie-settings">Cookie settings</a></div></footer>
 <a class="wa-float" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue" aria-label="Message Jolt on WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
-<div class="cookie-bar" id="cookie-bar" hidden role="region" aria-label="Cookie consent"><p>We use cookies to understand how the site is used and improve it. You can accept or reject analytics cookies.</p><div class="cookie-btns"><button type="button" class="btn btn-ghost sm" data-consent="denied">Reject</button><button type="button" class="btn btn-green sm" data-consent="granted">Accept</button></div></div>
+<div class="cookie-bar" id="cookie-bar" hidden role="region" aria-label="Cookie consent"><p>We'd like to use analytics cookies to understand how the site is used. You can accept or reject them, and change your mind any time under "Cookie settings". <a href="/privacy/">Privacy &amp; cookies</a></p><div class="cookie-btns"><button type="button" class="btn btn-cookie sm" data-consent="denied">Reject</button><button type="button" class="btn btn-cookie sm" data-consent="granted">Accept</button></div></div>
 <div class="app-modal" id="app-modal" hidden><div class="app-modal-card" role="dialog" aria-modal="true" aria-labelledby="app-modal-h"><button type="button" class="app-modal-x" aria-label="Close">×</button><h3 id="app-modal-h">Get the Jolt app</h3><p>Find stations near you, rent a power bank and return it anywhere.</p><div class="app-modal-btns"><a class="btn btn-green" href="{IOS_URL}" target="_blank" rel="noopener">App Store (iPhone)</a><a class="btn btn-ghost" href="{ANDROID_URL}" target="_blank" rel="noopener">Google Play (Android)</a></div></div></div>
 <script>window.JOLT_APP={{ios:"{IOS_URL}",android:"{ANDROID_URL}"}};</script>
 <script src="/assets/site.js?v={JS_V}" defer></script>
@@ -411,31 +410,21 @@ def customers_page():
 
 # Area landing pages (local SEO). Copy only describes what the app map shows; add real local venues when Jolt confirms them.
 AREAS = [
-  {"slug": "soho-london", "name": "Soho", "city": "London", "market": "UK", "lang": "en-GB", "map": "soho",
-   "spots": "Dean Street, Brewer Street, Beak Street and Chinatown",
-   "intro": "Soho never really switches off, and neither do your customers' phones. Jolt already has stations across Soho and the West End, so people out for the evening know where to find a charge.",
-   "venues": "late bars, restaurants, theatres and members' clubs",
-   "near": "Fitzrovia, Covent Garden and Piccadilly"},
-  {"slug": "kensington-london", "name": "Kensington", "city": "London", "market": "UK", "lang": "en-GB", "map": "kensington",
-   "spots": "Notting Hill, Kensington and Earl's Court",
-   "intro": "From hotels near the museums to pubs and restaurants around Notting Hill, Kensington has a steady flow of visitors who spend the whole day out. A Jolt station keeps them in your venue instead of heading home to charge.",
-   "venues": "hotels, pubs, restaurants and visitor attractions",
-   "near": "Notting Hill, South Kensington and Earl's Court"},
+  {"slug": "dublin", "name": "Dublin", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "dublin-area",
+   "spots": "the city centre, Swords, Malahide, Dún Laoghaire and right across the county",
+   "intro": "Dublin is Jolt's home and its busiest network, with hundreds of stations from the city centre out to Swords, Malahide and Dún Laoghaire. Most Dublin pubs already have one, so customers expect to find a charge wherever they go.",
+   "venues": "pubs, hotels, hospitals, shopping centres and late venues",
+   "near": "the city centre, Dún Laoghaire, Swords and the airport"},
+  {"slug": "london", "name": "London", "city": "United Kingdom", "market": "UK", "lang": "en-GB", "map": "london-area",
+   "spots": "the West End, the City, Camden, Wembley and out to Bromley and Croydon",
+   "intro": "Jolt is already live right across London, from the West End and the City out to Wembley, Bromley and Croydon. Visitors can rent a power bank in your venue and drop it at any station across the capital.",
+   "venues": "pubs, bars, hotels, restaurants and event venues",
+   "near": "Soho, Kensington, Camden and the City"},
   {"slug": "belfast", "name": "Belfast", "city": "Northern Ireland", "market": "UK", "lang": "en-GB", "map": "belfast",
    "spots": "the Cathedral Quarter, the city centre and the Queen's Quarter",
    "intro": "Jolt is already live across Belfast, from the Cathedral Quarter to the Queen's Quarter. Customers can rent a power bank in one venue and return it in another across the city, or across the border.",
    "venues": "bars, hotels, restaurants and event venues",
    "near": "the Cathedral Quarter, Queen's Quarter and west Belfast"},
-  {"slug": "limerick", "name": "Limerick", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "limerick",
-   "spots": "the city centre, King John's Castle and the riverside",
-   "intro": "Jolt stations are already in Limerick city, from around King John's Castle to the riverside. Match days, nights out and long shopping days all end with flat phones, and that is when customers look for a station.",
-   "venues": "pubs, hotels, restaurants and match-day venues",
-   "near": "the city centre, Ballinacurra and Dooradoyle"},
-  {"slug": "galway", "name": "Galway", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "galway",
-   "spots": "the city centre, the Spanish Arch, the University of Galway and Salthill",
-   "intro": "Galway's pubs, festivals and student nights keep phones busy until late. Jolt is already live from the Spanish Arch to the University of Galway and out to Salthill.",
-   "venues": "pubs, hotels, restaurants and student venues",
-   "near": "the city centre, the university and Salthill"},
   {"slug": "cork", "name": "Cork", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "cork",
    "spots": "the city centre, Wilton, Douglas and along the River Lee",
    "intro": "Jolt is one of the most visible charging networks in Cork, with stations right across the city centre and out to Wilton and Douglas. Customers already know to look for one.",
@@ -451,6 +440,26 @@ AREAS = [
    "intro": "Jolt is already in Greystones, from the harbour along the main street to the south of the town. Customers can rent here and return in Bray, Dublin or anywhere on the network.",
    "venues": "cafés, pubs, restaurants and harbour venues",
    "near": "Bray, Wicklow town and Dublin"},
+  {"slug": "galway", "name": "Galway", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "galway",
+   "spots": "the city centre, the Spanish Arch, the University of Galway and Salthill",
+   "intro": "Galway's pubs, festivals and student nights keep phones busy until late. Jolt is already live from the Spanish Arch to the University of Galway and out to Salthill.",
+   "venues": "pubs, hotels, restaurants and student venues",
+   "near": "the city centre, the university and Salthill"},
+  {"slug": "limerick", "name": "Limerick", "city": "Ireland", "market": "IE", "lang": "en-IE", "map": "limerick",
+   "spots": "the city centre, King John's Castle and the riverside",
+   "intro": "Jolt stations are already in Limerick city, from around King John's Castle to the riverside. Match days, nights out and long shopping days all end with flat phones, and that is when customers look for a station.",
+   "venues": "pubs, hotels, restaurants and match-day venues",
+   "near": "the city centre, Ballinacurra and Dooradoyle"},
+  {"slug": "soho-london", "name": "Soho", "city": "London", "market": "UK", "lang": "en-GB", "map": "soho",
+   "spots": "Dean Street, Brewer Street, Beak Street and Chinatown",
+   "intro": "Soho never really switches off, and neither do your customers' phones. Jolt already has stations across Soho and the West End, so people out for the evening know where to find a charge.",
+   "venues": "late bars, restaurants, theatres and members' clubs",
+   "near": "Fitzrovia, Covent Garden and Piccadilly"},
+  {"slug": "kensington-london", "name": "Kensington", "city": "London", "market": "UK", "lang": "en-GB", "map": "kensington",
+   "spots": "Notting Hill, Kensington and Earl's Court",
+   "intro": "From hotels near the museums to pubs and restaurants around Notting Hill, Kensington has a steady flow of visitors who spend the whole day out. A Jolt station keeps them in your venue instead of heading home to charge.",
+   "venues": "hotels, pubs, restaurants and visitor attractions",
+   "near": "Notting Hill, South Kensington and Earl's Court"},
   {"slug": "wicklow", "name": "Wicklow", "city": "Co. Wicklow", "market": "IE", "lang": "en-IE", "map": "wicklow",
    "spots": "Main Street and the harbour",
    "intro": "Jolt is already live in Wicklow town, along Main Street and down by the harbour. Visitors exploring the coast and the gaol need a charge before the trip home.",
@@ -517,6 +526,37 @@ def areas_index():
 <div class="panel st-help"><div><h3>Don't see your area?</h3><p>We're expanding fast. Tell us about your venue and we'll let you know when we can install.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
+def privacy_page():
+    P = {"path": "/privacy/", "lang": "en", "title": "Privacy & Cookies | Jolt", "desc": "How Jolt uses the information you give us and the cookies on this website."}
+    return head(None, P) + NAV + f"""
+<main><section class="sec page-top"><div class="wrap narrow legal-doc">
+<h1 class="page-h1">Privacy &amp; cookies</h1>
+<p class="draft-note">Draft for review: to be checked by Jolt before launch. Items in [brackets] need Jolt's details.</p>
+<p>This notice explains how Jolt Ireland Technology Ltd ("Jolt", "we") uses information collected through this website. Last updated: November 2026.</p>
+<h2>Who we are</h2>
+<p>Jolt Ireland Technology Ltd, [company number], [registered office address]. Contact: [privacy contact email] or WhatsApp {WHATSAPP_DISPLAY}.</p>
+<h2>Information you give us</h2>
+<p>When you ask for a station or join the waitlist, we collect your business name, your name, email, phone number and, for EU or international requests, your country, together with the answers you choose in the form (number of venues, weekly customers, recommended station).</p>
+<p>We use this only to contact you about a Jolt station or about expanding to your area. Our legal basis is taking steps at your request before entering into a contract, and our legitimate interest in responding to business enquiries. We keep enquiries for up to 24 months unless you become a partner venue, then for as long as the partnership lasts and as required by law.</p>
+<h2>Website statistics without cookies</h2>
+<p>Our own server counts page views and actions on the site (for example which buttons are tapped and which step of the form is reached). It sets no cookies and stores nothing on your device. To count daily visitors, it combines your IP address and browser type with a random value that is replaced every day, and stores only the result. That result cannot identify you and cannot be linked across days. Your IP address itself is not stored. Our legal basis is our legitimate interest in understanding and improving the website.</p>
+<h2>Cookies</h2>
+<table><tr><th>Cookie</th><th>Purpose</th><th>When it's set</th></tr>
+<tr><td>Google Analytics (_ga, _ga_*)</td><td>Measures how visitors use the site, across visits</td><td>Only if you click Accept</td></tr>
+<tr><td>Google advertising cookies</td><td>Measures the results of our advertising</td><td>Only if you click Accept</td></tr>
+<tr><td>jolt-consent (stored in your browser)</td><td>Remembers your cookie choice</td><td>When you make a choice</td></tr></table>
+<p>You can change your choice at any time using "Cookie settings" at the bottom of every page.</p>
+<h2>Who we share information with</h2>
+<ul><li>Our website host (Hostinger), which stores the site and its statistics database.</li>
+<li>WhatsApp (Meta), if you send us a message or your enquiry is passed to us by WhatsApp.</li>
+<li>Google, for analytics, only if you accept cookies. Google may process data outside the EEA under the EU-US Data Privacy Framework.</li></ul>
+<p>We do not sell your information.</p>
+<h2>Your rights</h2>
+<p>You can ask to see, correct or delete your information, object to how we use it, or ask us to stop contacting you, by contacting us as above. You can also complain to the Data Protection Commission (dataprotection.ie) or, in the UK, the Information Commissioner's Office (ico.org.uk).</p>
+<h2>Using the Jolt app</h2>
+<p>Renting a power bank through the Jolt app is covered by the app's own privacy policy, available <a href="{PRIVACY}">here</a>.</p>
+</div></section></main>""" + FOOTER
+
 def thanks_page():
     return head(None).replace(f'<link rel="canonical" href="{DOMAIN}/">', f'<link rel="canonical" href="{DOMAIN}/thank-you/"><meta name="robots" content="noindex">') + NAV + f'''
 <main><section class="hero root"><div class="wrap narrow">
@@ -537,6 +577,7 @@ write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
 write("stations/index.html", stations_index())
 write("customers/index.html", customers_page())
+write("privacy/index.html", privacy_page())
 write("areas/index.html", areas_index())
 for a in AREAS:
     write(f"areas/{a['slug']}/index.html", area_page(a))
@@ -552,7 +593,7 @@ for k in (None, "ie", "uk"):
     for a in ("ie", "uk"):
         sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
-for u in ["/stations/", "/customers/", "/areas/"] + [f"/areas/{a['slug']}/" for a in AREAS] + [f"/stations/{x['slug']}/" for x in STATIONS]:
+for u in ["/stations/", "/customers/", "/areas/", "/privacy/"] + [f"/areas/{a['slug']}/" for a in AREAS] + [f"/stations/{x['slug']}/" for x in STATIONS]:
     sm += f"<url><loc>{DOMAIN}{u}</loc></url>\n"
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)
