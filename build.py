@@ -60,32 +60,32 @@ FAQ = [
 STATIONS = [
   {"slug": "countertop-8-white", "name": "Countertop 8", "finish": "White", "type": "Countertop", "banks": 8,
    "tag": "Small cafés, salons, reception desks",
-   "blurb": "Our most compact station. Eight power banks and a touchscreen in a unit that sits beside the till. The white finish suits bright cafés, clinics and hotel receptions.",
-   "specs": [("Power banks", "8"), ("Unit size", "23.8 × 22 cm footprint, 23.7 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+   "blurb": "A compact countertop station with 8 power banks in two bays of four, and a screen on top. White finish.",
+   "specs": [("Power banks", "8 (2 bays of 4)"), ("Unit height", "23.7 cm"), ("Unit width", "23.8 cm"), ("Unit depth", "22 cm"), ("Screen", "24.5 × 16.1 cm")]},
   {"slug": "countertop-8-black", "name": "Countertop 8", "finish": "Black", "type": "Countertop", "banks": 8,
    "tag": "Bars, restaurants, smaller venues",
-   "blurb": "The same compact eight-bank station in black, with green light rings around each bay. Fits on a bar top or beside the till without taking over the space.",
-   "specs": [("Power banks", "8"), ("Unit size", "23.8 × 22 cm footprint, 23.7 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+   "blurb": "The same compact countertop station in black, with green light rings around each bay. 8 power banks in two bays of four.",
+   "specs": [("Power banks", "8 (2 bays of 4)"), ("Unit height", "23.7 cm"), ("Unit width", "23.8 cm"), ("Unit depth", "22 cm"), ("Screen", "24.5 × 16.1 cm")]},
   {"slug": "countertop-12", "name": "Countertop 12", "finish": "Black", "type": "Countertop", "banks": 12,
    "tag": "Busy pubs, hotel bars, gyms",
-   "blurb": "Twelve power banks on the same small footprint as the Countertop 8, with an extra bay level. The go-to station for busy pubs and hotel bars.",
-   "specs": [("Power banks", "12"), ("Unit size", "23.8 × 22 cm footprint, 31.2 cm tall"), ("Screen", "24.5 × 16.1 cm touchscreen"), ("Placement", "Counter or shelf, one standard socket")]},
+   "blurb": "The same footprint as the Countertop 8 with a third bay, for 12 power banks in total.",
+   "specs": [("Power banks", "12 (3 bays of 4)"), ("Unit height", "31.2 cm"), ("Unit width", "23.8 cm"), ("Unit depth", "22 cm"), ("Screen", "24.5 × 16.1 cm")]},
   {"slug": "slim-kiosk-24", "name": "Slim Kiosk 24", "finish": "Black", "type": "Floor-standing", "banks": 24,
    "tag": "Nightclubs, shopping centres, hotel lobbies",
-   "blurb": "A slim floor-standing kiosk with 24 power banks, a portrait screen and tap-to-pay. Takes up less floor space than a bar stool.",
-   "specs": [("Power banks", "24"), ("Height", "180 cm"), ("Footprint", "35.5 × 43.5 cm base"), ("Screen", "52.8 cm portrait display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
-  {"slug": "secure-locker-24", "name": "Secure Locker 24", "finish": "Black", "type": "Floor-standing", "banks": 24,
-   "tag": "Hospitals, transport hubs, unattended areas",
-   "blurb": "24 power banks behind three lockable bays, with a card terminal on the side. Built for public areas and places where the station isn't always in view of staff.",
-   "specs": [("Power banks", "24, in 3 lockable bays"), ("Height", "180 cm"), ("Footprint", "52 × 32 cm base"), ("Screen", "52.6 cm portrait display"), ("Payment", "Integrated card terminal")]},
+   "blurb": "A slim floor-standing kiosk with 24 power banks, a portrait screen and a tap-to-pay panel.",
+   "specs": [("Power banks", "24"), ("Height", "180 cm"), ("Screen", "29.75 × 52.8 cm"), ("Base", "35.5 × 43.5 cm"), ("Upper body depth", "17.5 cm")]},
+  {"slug": "secure-locker-24", "name": "Secure Locker", "finish": "Black", "type": "Floor-standing", "banks": None, "bays": 3,
+   "tag": "Hospitals, transport hubs, public areas",
+   "blurb": "A floor-standing station with its power banks behind three closed compartments, a portrait screen and a card terminal on the side.",
+   "specs": [("Compartments", "3"), ("Height", "180 cm"), ("Width", "39 cm"), ("Depth", "22 cm"), ("Screen", "29.6 × 52.6 cm"), ("Base", "52 × 32 cm")]},
   {"slug": "media-kiosk-48", "name": "Media Kiosk 48", "finish": "Black", "type": "Floor-standing", "banks": 48,
    "tag": "Stadiums, airports, large venues",
-   "blurb": "Our highest-capacity kiosk, with 48 power banks and a large 94 cm display that can run your own promotions between rental instructions.",
-   "specs": [("Power banks", "48"), ("Height", "205 cm"), ("Footprint", "58.3 × 50 cm base"), ("Screen", "94.3 cm portrait display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
+   "blurb": "The tallest station, with 48 power banks, a large portrait screen and a tap-to-pay panel.",
+   "specs": [("Power banks", "48"), ("Height", "205 cm"), ("Width", "58 cm"), ("Screen", "53.2 × 94.3 cm"), ("Base", "58.3 × 50 cm"), ("Upper body depth", "15 cm")]},
   {"slug": "tower-48", "name": "Tower 48", "finish": "Black / teal light", "type": "Floor-standing", "banks": 48,
    "tag": "Festivals, events, large nightclubs",
-   "blurb": "48 power banks in a tower with a teal light band, so guests can spot it across a dark, crowded room. Tap-to-pay and a landscape screen at eye level.",
-   "specs": [("Power banks", "48"), ("Height", "174.4 cm"), ("Footprint", "51 × 52.1 cm base"), ("Screen", "47.8 × 26 cm landscape display"), ("Payment", "Contactless card, Apple Pay, Google Pay")]},
+   "blurb": "48 power banks in a tower with a teal light band around the bank panel, a landscape screen on top and a tap-to-pay panel.",
+   "specs": [("Power banks", "48"), ("Height", "174.4 cm"), ("Width", "51 cm"), ("Screen", "47.8 × 26 cm"), ("Base", "51 × 52.1 cm"), ("Top depth", "14.5 cm")]},
 ]
 ST = {x["slug"]: x for x in STATIONS}
 
@@ -319,11 +319,14 @@ def page(key):
 </main>''' + FOOTER
 
 
+def cap(x):
+    return f'<b>{x["banks"]}</b> power banks' if x.get("banks") else f'<b>{x["bays"]}</b> compartments'
+
 def station_card(x):
     return f"""<a class="st-card" href="/stations/{x["slug"]}/">
 <div class="stage"><img src="/assets/stations/{x["slug"]}-angle-sm.webp" alt="Jolt {x["name"]} power bank station, {x["finish"].lower()}" loading="lazy"></div>
 <div class="st-meta"><span class="st-type">{x["type"]} · {x["finish"]}</span><h3>{x["name"]}</h3>
-<p>{x["tag"]}</p><span class="st-banks"><b>{x["banks"]}</b> power banks</span></div></a>"""
+<p>{x["tag"]}</p><span class="st-banks">{cap(x)}</span></div></a>"""
 
 def stations_index():
     P = {"path": "/stations/", "lang": "en", "title": "Jolt Power Bank Stations | Countertop & Floor-Standing Units",
@@ -343,8 +346,8 @@ def stations_index():
 
 def station_page(x):
     P = {"path": f"/stations/{x['slug']}/", "lang": "en",
-         "title": f"Jolt {x['name']} ({x['finish']}) | {x['banks']}-Bank Power Bank Station",
-         "desc": f"Jolt {x['name']}: {x['banks']} power banks, {x['type'].lower()}. {x['tag']}. Installed free in your venue with a revenue share."}
+         "title": f"Jolt {x['name']} ({x['finish']}) | " + (f"{x['banks']}-Bank " if x['banks'] else "") + "Power Bank Station",
+         "desc": f"Jolt {x['name']}: " + (f"{x['banks']} power banks" if x['banks'] else f"{x['bays']} compartments") + f", {x['type'].lower()}. {x['tag']}. Installed free in your venue with a revenue share."}
     specs = "".join(f"<tr><th>{k}</th><td>{v}</td></tr>" for k, v in x["specs"])
     others = "".join(station_card(o) for o in STATIONS if o["slug"] != x["slug"] and o["type"] == x["type"])[:99999]
     ld = {"@context": "https://schema.org", "@type": "Product", "name": f"Jolt {x['name']}", "brand": {"@type": "Brand", "name": "Jolt"},
@@ -362,10 +365,12 @@ def station_page(x):
 <div class="st-info">
 <span class="st-type">{x["type"]} · {x["finish"]}</span>
 <h1 class="page-h1">{x["name"]}</h1>
-<p class="st-banks big"><b>{x["banks"]}</b> power banks</p>
+<p class="st-banks big">{cap(x)}</p>
 <p class="lead">{x["blurb"]}</p>
 <p class="st-best"><b>Best for:</b> {x["tag"]}</p>
-<table class="specs">{specs}<tr><th>Cost to your venue</th><td class="g">Free, including installation and maintenance</td></tr></table>
+<h2 class="specs-h">Specifications</h2>
+<table class="specs">{specs}</table>
+<p class="specs-src">Measurements from Jolt's product sheet. Cost to your venue: free, including installation and maintenance.</p>
 <div class="hero-ctas"><a class="btn btn-green" href="/?station={x["slug"]}#setup-card">Request this station</a><a class="btn btn-ghost" href="https://wa.me/{WHATSAPP}?text={html.escape("Hi, I'm interested in the Jolt " + x["name"] + " for my venue").replace(" ", "%20")}">Ask on WhatsApp</a></div>
 <ul class="ticks"><li>Installed free</li><li>We keep it stocked and maintained</li><li>You earn a share of every rental</li></ul>
 </div></div>

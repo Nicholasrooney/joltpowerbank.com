@@ -111,7 +111,7 @@ const WHATSAPP = "353870365888";
                     : v < 3000 ? ["Slim Kiosk 24", "24 power banks · floor-standing with tap-to-pay", "slim-kiosk-24"]
                     :            ["Tower 48",      "48 power banks for the busiest venues", "tower-48"];
   const NAMES = { "countertop-8-white": "Countertop 8 (white)", "countertop-8-black": "Countertop 8 (black)", "countertop-12": "Countertop 12",
-                  "slim-kiosk-24": "Slim Kiosk 24", "secure-locker-24": "Secure Locker 24", "media-kiosk-48": "Media Kiosk 48", "tower-48": "Tower 48" };
+                  "slim-kiosk-24": "Slim Kiosk 24", "secure-locker-24": "Secure Locker", "media-kiosk-48": "Media Kiosk 48", "tower-48": "Tower 48" };
   const wanted = new URLSearchParams(location.search).get("station");
   if (wanted && NAMES[wanted]) {
     $("#setup-h-station").value = NAMES[wanted];
