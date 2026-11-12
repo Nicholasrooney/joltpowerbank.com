@@ -210,7 +210,7 @@ def setup_card(preset):
 </div>
 <div class="setup-capture">
 <span class="setup-step"><span class="setup-step__num">4</span> <span id="setup-q4">Where should we send your setup?</span></span>
-<form class="setup-form" id="setup-form" data-form-type="setup-hero" novalidate>
+<form class="setup-form" id="setup-form" data-form-type="setup-hero" autocomplete="on" novalidate>
 <input type="hidden" name="source" value="setup-hero">
 <input type="hidden" name="market" id="setup-h-market" value="{preset}">
 <input type="hidden" name="lead_status" id="setup-h-status" value="">
@@ -221,11 +221,11 @@ def setup_card(preset):
 <div class="setup-interest" id="setup-interest" hidden></div>
 <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off">
 <div class="setup-form__grid">
-<input type="text" name="business" class="setup-form__input" placeholder="Business name" required autocomplete="organization" aria-label="Business name">
-<input type="text" name="name" class="setup-form__input" placeholder="Your name" required autocomplete="name" aria-label="Your name">
-<input type="email" name="email" class="setup-form__input" placeholder="Email" required autocomplete="email" aria-label="Email">
-<input type="tel" name="phone" class="setup-form__input" placeholder="Phone" required autocomplete="tel" aria-label="Phone number">
-<input type="text" name="country" id="setup-country" class="setup-form__input span2" placeholder="Country" autocomplete="country-name" aria-label="Country" hidden>
+<input type="text" name="business" class="setup-form__input" placeholder="Business name" required autocomplete="organization" autocapitalize="words" aria-label="Business name">
+<input type="text" name="name" class="setup-form__input" placeholder="Your name" required autocomplete="name" autocapitalize="words" aria-label="Your name">
+<input type="email" name="email" class="setup-form__input" placeholder="Email" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" aria-label="Email">
+<input type="tel" name="phone" class="setup-form__input" placeholder="Phone" required autocomplete="tel" inputmode="tel" aria-label="Phone number">
+<input type="text" name="country" id="setup-country" class="setup-form__input span2" placeholder="Country" autocomplete="country-name" autocapitalize="words" aria-label="Country" hidden>
 </div>
 <button type="submit" class="btn btn-green full" id="setup-submit">Get my free station</button>
 <p class="form-msg" role="status"></p>
