@@ -245,9 +245,12 @@ def page(key):
 <main>
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
+<div class="hero-top">
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations.</h1>
 <p class="lead">We install and maintain it, and you earn a share of every rental.</p>
+<figure class="hero-map"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><figcaption><i></i>Live on the Jolt app · Dublin</figcaption></figure>
+</div>
 <div class="brands" id="brands" data-design="1">
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>

@@ -290,3 +290,13 @@ details p{color:var(--muted);margin-top:.6rem}
 .phone:nth-child(2){transform:translateY(28px)}
 .phone figcaption{text-align:center;margin-top:.8rem;font:700 .8rem Archivo,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
 @media(max-width:900px){.app-proof{grid-template-columns:1fr;padding:1.6rem;gap:2rem}.phone:nth-child(2){transform:none}}
+/* ===== Hero map (desktop only): sits under the word "BANK", beside "STATIONS." ===== */
+.hero-top{position:relative}
+.hero-map{display:none}
+@media(min-width:1101px){
+.hero-top{min-height:300px}
+.hero-map{display:block;position:absolute;right:0;top:122px;width:250px;margin:0;border-radius:16px;overflow:hidden;border:1px solid #2a352a;box-shadow:0 18px 44px rgba(0,0,0,.55),0 0 36px rgba(57,255,106,.12)}
+.hero-map img{display:block;width:100%;height:auto}
+.hero-map figcaption{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;border-radius:9px;background:rgba(6,9,6,.85);backdrop-filter:blur(6px);font-size:.68rem;font-weight:600;color:#e6ece6}
+.hero-map figcaption i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+}

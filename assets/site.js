@@ -352,3 +352,24 @@ const WHATSAPP = "353870365888";
     const u = new URL(location.href); u.searchParams.set("design", b.dataset.d); history.replaceState(null, "", u);
   }));
 })();
+
+/* ---------- Hero map (desktop): pin it under the word "BANK", right-aligned to the end of the first headline line ---------- */
+(function () {
+  const top = document.querySelector(".hero-top"), map = top && top.querySelector(".hero-map"), h1 = top && top.querySelector("h1");
+  if (!map || !h1) return;
+  function place() {
+    if (getComputedStyle(map).display === "none") return;
+    const r = document.createRange(); r.selectNodeContents(h1);
+    const lines = [...r.getClientRects()].filter(x => x.width > 2);
+    if (lines.length < 2) return;
+    const box = top.getBoundingClientRect(), l1 = lines[0], l2 = lines[lines.length - 1];
+    const width = Math.max(170, Math.min(250, l1.right - l2.right - 28));     // fits between "STATIONS." and the end of "BANK"
+    map.style.width = width + "px";
+    map.style.right = Math.max(0, box.right - l1.right) + "px";
+    map.style.top = (l2.top - box.top + 6) + "px";
+    const lead = top.querySelector(".lead"), mapLeft = l1.right - width;      // subtext wraps before the map
+    if (lead) lead.style.maxWidth = Math.max(240, mapLeft - box.left - 24) + "px";
+  }
+  place(); addEventListener("resize", place);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+})();
