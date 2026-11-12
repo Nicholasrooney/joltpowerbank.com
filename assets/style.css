@@ -300,3 +300,11 @@ details p{color:var(--muted);margin-top:.6rem}
 .hero-map figcaption{position:absolute;left:8px;bottom:8px;display:flex;align-items:center;gap:.4rem;padding:.35rem .6rem;border-radius:9px;background:rgba(6,9,6,.85);backdrop-filter:blur(6px);font-size:.68rem;font-weight:600;color:#e6ece6}
 .hero-map figcaption i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
 }
+/* ===== Phone order: headline + showcase, then the stats band, then the quote form ===== */
+.band-mobile{display:none}
+@media(max-width:900px){
+.hero-in{flex-direction:column}
+.band-mobile{display:block;width:100%;border:1px solid var(--line);border-radius:18px}
+.band-mobile .band-in{width:100%;padding:1.2rem .6rem}
+section.band:not(.band-mobile){display:none}
+}

@@ -241,7 +241,7 @@ def page(key):
     venues = "".join(f'<article class="card"><h3>{t}</h3><p>{d}</p></article>' for t, d in VENUES)
     faq = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQ)
     return head(key) + NAV + '''<!-- DESIGN PREVIEW SWITCHER: remove this block once a brand design is chosen -->
-<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Drum</button><button data-d="2">2 Flip wall</button><button data-d="3">3 Runway</button><button data-d="4">4 Categories</button><button data-d="5">5 Orbit</button></div>''' + f'''
+<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Orbit</button><button data-d="2">2 Drum</button><button data-d="3">3 Categories</button><button data-d="4">4 Flip wall</button><button data-d="5">5 Runway</button></div>''' + f'''
 <main>
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
@@ -258,6 +258,9 @@ def page(key):
 </div>
 <!-- testimonials strip removed for now; re-add: conveyor(row1, "tconv") -->
 </div>
+<div class="band band-mobile"><div class="band-in">
+<div><b>0</b><span>cost to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>
+</div></div>
 {setup_card(P["market"])}
 </div></section>
 
@@ -361,11 +364,11 @@ def station_page(x):
 </main>""" + FOOTER
 
 DESIGN_INFO = [
-  ("1", "Drum", "Rows of venues on a cylinder that rolls toward you. Venues on the hidden side are swapped as it turns, so every customer comes round."),
-  ("2", "Flip wall", "A grid of tiles; one flips to a new venue every moment. Calm, readable, and shows a lot at once."),
-  ("3", "Runway", "Columns of venues streaming toward you on a tilted floor, out of the distance."),
-  ("4", "Categories", "Counts by venue type with a grid for each. Cycles on its own; visitors can tap a category."),
-  ("5", "Orbit", "Venues circling a Jolt station on tilted rings. The front is bigger and brighter, the back fades."),
+  ("1", "Orbit", "Logos circling a Jolt station on tilted rings. The best-known venues are the biggest, at the front."),
+  ("2", "Drum", "Rows of venues roll over a cylinder toward you, each logo paired with the venue name and location."),
+  ("3", "Categories", "Counts by venue type with a grid for each. Cycles on its own; visitors can tap a category."),
+  ("4", "Flip wall", "A grid of tiles; one flips to a new venue every moment. Calm, readable, and shows a lot at once."),
+  ("5", "Runway", "Columns of venues streaming toward you on a tilted floor, out of the distance."),
 ]
 
 def customers_page():

@@ -180,9 +180,9 @@ const WHATSAPP = "353870365888";
   const pair = v => `<div class="bt-pair">${tile(v)}<div class="bt-info"><b>${esc(v.name)}</b><span>${esc(v.location || SHORT[v.category] || "")}</span></div></div>`;
   const reduce = false, SPEED = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.6 : 1;
   const makeDesigns = stage => ({
-    /* 1. Drum: the runway's flow, curved over a big cylinder. Rows come over the crest and roll down toward you.
+    /* 2. Drum: the runway's flow, curved over a big cylinder. Rows come over the crest and roll down toward you.
           Same 4 columns, tile size and surface speed as the runway; rows are refilled while they're out of sight. */
-    1() {
+    2() {
       const FACES = 20, PER = 2, STEP = 360 / FACES;   // each row: 2 pairs of [logo | name + location]
       const W = stage.clientWidth, H = stage.clientHeight;
       const DW = W * 1.16, colW = (DW - 3 * 10) / 4, faceH = colW * 5 / 9 + 10, PUSH = 170;   // wider drum, pushed back for depth           // tile 9:5 + 10px gap, like the runway
@@ -213,8 +213,8 @@ const WHATSAPP = "353870365888";
       return () => cancelAnimationFrame(raf);
     },
 
-    /* 2. Flip wall: a grid of tiles; one flips to a new venue every ~0.7s */
-    2() {
+    /* 4. Flip wall: a grid of tiles; one flips to a new venue every ~0.7s */
+    4() {
       const COLS = 4, ROWS = 5, N = COLS * ROWS; let next = 0;
       const pick = () => MIX[next++ % MIX.length];
       stage.innerHTML = `<div class="flipwall" style="--cols:${COLS}">${Array.from({ length: N }, () => `<div class="fw-cell"><div class="fw-card"><div class="fw-face">${tile(pick())}</div><div class="fw-face fw-back"></div></div></div>`).join("")}</div>`;
@@ -229,8 +229,8 @@ const WHATSAPP = "353870365888";
       return () => clearInterval(id);
     },
 
-    /* 3. Runway: columns of venues streaming toward you on a tilted plane */
-    3() {
+    /* 5. Runway: columns of venues streaming toward you on a tilted plane */
+    5() {
       const COLS = 4, per = Math.ceil(MIX.length / COLS);
       const cols = Array.from({ length: COLS }, (_, c) => MIX.slice(c * per, (c + 1) * per));
       stage.innerHTML = `<div class="runway"><div class="runway-plane">${cols.map((list, c) => {
@@ -240,8 +240,8 @@ const WHATSAPP = "353870365888";
       return () => {};
     },
 
-    /* 4. Categories: counts per category; auto-cycles, click to pick */
-    4() {
+    /* 3. Categories: counts per category; auto-cycles, click to pick */
+    3() {
       const cats = [...new Set(V.map(v => v.category))].sort((a, b) => V.filter(v => v.category === b).length - V.filter(v => v.category === a).length);
       const groups = [["All venues", MIX], ...cats.map(c => [c, V.filter(v => v.category === c).sort((a, b) => (b.logo ? 1 : 0) - (a.logo ? 1 : 0))])];
       stage.innerHTML = `<div class="cats"><div class="cat-chips">${groups.map(([c, l], i) => `<button type="button" class="cat-chip" data-i="${i}">${c} <b>${l.length}</b><i></i></button>`).join("")}</div><div class="cat-grid"></div></div>`;
@@ -265,9 +265,9 @@ const WHATSAPP = "353870365888";
       return () => clearInterval(timer);
     },
 
-    /* 5. Orbit: logo venues only, fixed (no swapping). Best-known venues are the biggest tiles, on the outer ring,
+    /* 1. Orbit: logo venues only, fixed (no swapping). Best-known venues are the biggest tiles, on the outer ring,
           which passes closest to the viewer. The inner ring is wide enough to clear the station. */
-    5() {
+    1() {
       const W = stage.clientWidth, H = stage.clientHeight, cx = W / 2, cy = H * 0.47;
       const by = Object.fromEntries(withLogo.map(v => [v.name, v]));
       const TOP = ["RDS", "Tesco", "O'Donoghue's", "St Vincent's University Hospital", "Cork University Hospital", "St James's Hospital",
