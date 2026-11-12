@@ -486,3 +486,23 @@ const WHATSAPP = "353870365888";
     if (type === "event") (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, params || {}));
   };
 })();
+
+/* ---------- Phone menu (three lines) ---------- */
+(function () {
+  const b = document.getElementById("burger"), m = document.getElementById("mobile-menu");
+  if (!b || !m) return;
+  const set = open => { m.hidden = !open; b.setAttribute("aria-expanded", open); b.setAttribute("aria-label", open ? "Close menu" : "Open menu"); };
+  b.addEventListener("click", () => { const o = m.hidden; set(o); if (o && window.track) track("click", "menu-open"); });
+  m.addEventListener("click", e => { if (e.target.closest("a")) set(false); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") set(false); });
+})();
+
+/* ---------- Fit "Power Bank Stations" on one line ---------- */
+(function () {
+  const h = document.querySelector(".hero-h1"); if (!h) return;
+  function fit() {
+    h.style.fontSize = ""; const max = parseFloat(getComputedStyle(h).fontSize), w = h.parentElement.clientWidth;
+    if (h.scrollWidth > w) h.style.fontSize = Math.floor(max * w / h.scrollWidth * 0.99) + "px";
+  }
+  fit(); addEventListener("resize", fit); if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();

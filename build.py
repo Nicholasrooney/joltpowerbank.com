@@ -168,8 +168,10 @@ def head(key, P=None):
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
 <nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
-<div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a></div>
-</div></header>'''
+<div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button></div>
+</div>
+<nav class="mobile-menu" id="mobile-menu" hidden><a href="/">Home</a><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a><a class="app-link" href="{APP_URL}">Find a power bank</a></nav>
+</header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
@@ -256,17 +258,15 @@ def page(key):
 <main>
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
-<div class="hero-top">
-<span class="pill">4,000+ locations across Ireland &amp; the UK</span>
-<h1>Free power bank stations.</h1>
-<a class="btn btn-green btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find a power bank</a>
-<a class="hero-map app-link" href="{APP_URL}" aria-label="Open the Jolt app to find a power bank"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><span class="hero-map-cap"><i></i><span class="long">Live on the Jolt app · Dublin</span><span class="short">Live · Dublin</span></span></a>
-</div>
+<h1 class="hero-h1">Power Bank Stations</h1>
+<div class="hero-btns"><a class="btn btn-green hb" href="#setup-card">Get free power bank station</a><a class="btn btn-ghost hb btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find nearest power bank</a></div>
 <div class="brands" id="brands" data-design="1">
-<div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
+<div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>
 </div>
+<span class="pill">4,000+ locations across Ireland &amp; the UK</span>
+<a class="hero-map hero-map-flow app-link" href="{APP_URL}" aria-label="Open the Jolt app to find a power bank"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533" loading="lazy"><span class="hero-map-cap"><i></i>Live on the Jolt app · Dublin</span></a>
 <!-- testimonials strip removed for now; re-add: conveyor(row1, "tconv") -->
 </div>
 <div class="band band-mobile"><div class="band-in">
