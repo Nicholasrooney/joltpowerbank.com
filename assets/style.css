@@ -154,7 +154,7 @@ details p{color:var(--muted);margin-top:.6rem}
 .logo-tile img{max-height:36px;max-width:130px;filter:grayscale(1) brightness(1.6);opacity:.85;transition:filter .2s,opacity .2s}
 .logo-tile:hover img{filter:none;opacity:1}
 .logo-tile.is-placeholder{border-style:dashed;border-color:#3a443a;color:#566056;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
-@media(prefers-reduced-motion:reduce){.conveyor-track{animation:none}.conveyor{overflow-x:auto}}
+@media(prefers-reduced-motion:reduce){.conveyor-track,.rw-track{animation-duration:120s}}
 @media(max-width:900px){.hero-in{display:flex;flex-direction:column-reverse}.setup-card{width:100%}}
 /* ---- Stations ---- */
 .sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}.sec-head h2{margin:0}

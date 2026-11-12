@@ -176,7 +176,8 @@ const WHATSAPP = "353870365888";
   const tile = (v, cls = "") => v.logo
     ? `<div class="bt bt-logo ${cls}" title="${esc(v.name)}"><img src="/assets/venues/${v.logo}" alt="${esc(v.name)}" loading="lazy" decoding="async"></div>`
     : `<div class="bt bt-name ${cls}"><span>${esc(v.name)}</span><i>${SHORT[v.category] || ""}</i></div>`;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // "Reduce motion" (e.g. Windows "Show animations" off) slows the showcase down instead of freezing it
+  const reduce = false, SPEED = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.6 : 1;
   const makeDesigns = stage => ({
     /* 1. Drum: the runway's flow, curved over a big cylinder. Rows come over the crest and roll down toward you.
           Same 4 columns, tile size and surface speed as the runway; rows are refilled while they're out of sight. */
@@ -197,7 +198,7 @@ const WHATSAPP = "353870365888";
       const degPerMs = (50 / r) * (180 / Math.PI) / 1000;                      // 50px/s along the surface = runway speed
       let angle = 0, last = performance.now(), raf;
       const loop = t => {
-        const dt = Math.min(50, t - last); last = t; if (!reduce) angle -= dt * degPerMs;
+        const dt = Math.min(50, t - last); last = t; angle -= dt * degPerMs * SPEED;
         drum.style.transform = `translateZ(${-r - PUSH}px) rotateX(${angle}deg)`;
         faces.forEach(f => {
           const a = ((f.base + angle) % 360 + 360) % 360;
@@ -283,7 +284,7 @@ const WHATSAPP = "353870365888";
       const loop = t => {
         const dt = Math.min(50, t - last); last = t;
         items.forEach(it => {
-          if (!reduce) it.a += it.g.sp * dt;
+          it.a += it.g.sp * dt * SPEED;
           const sn = Math.sin(it.a), depth = (sn + 1) / 2;                       // 0 = back (top), 1 = front (bottom)
           const x = cx + Math.cos(it.a) * it.g.rx, y = cy + sn * it.g.ry, sc = 0.62 + depth * 0.5;
           it.el.style.transform = `translate(${x - 40}px, ${y - 22}px) scale(${sc})`;
