@@ -285,7 +285,7 @@ const WHATSAPP = "353870365888";
         { list: pick(TOP),  rx: W * 0.47, ry: H * 0.43, sp: 0.00007, size: small ? 76 : 98 },
       ];
       rings.forEach(g => { g.rx = Math.min(g.rx, W / 2 - g.size * 0.62); });     // keep every tile inside the frame
-      stage.innerHTML = `<div class="orbit"><div class="orbit-core" style="top:${cy}px"><img src="/assets/stations/countertop-12-angle-sm.webp" alt="Jolt station"></div></div>`;
+      stage.innerHTML = `<div class="orbit"><div class="orbit-core" style="top:${cy}px"><img src="/assets/stations/countertop-12-cutout.webp" alt="Jolt Countertop 12 station"></div></div>`;
       const orbit = stage.querySelector(".orbit"), items = [];
       rings.forEach((g, ri) => {
         const ring = document.createElement("div"); ring.className = "orbit-path";
