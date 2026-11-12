@@ -378,3 +378,25 @@ const WHATSAPP = "353870365888";
   place(); addEventListener("resize", place);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
 })();
+
+/* ---------- App links: iPhone -> App Store, Android -> Google Play, desktop -> choose a store ---------- */
+(function () {
+  const A = window.JOLT_APP; if (!A) return;
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isAndroid = /Android/i.test(ua);
+  const modal = document.getElementById("app-modal");
+  const close = () => { if (modal) modal.hidden = true; };
+  if (modal) {
+    modal.addEventListener("click", e => { if (e.target === modal || e.target.closest(".app-modal-x")) close(); });
+    addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+  }
+  document.querySelectorAll(".app-link").forEach(a => {
+    a.href = isAndroid ? A.android : A.ios;
+    a.addEventListener("click", e => {
+      if (window.gtag) gtag("event", "app_link_click", { platform: isIOS ? "ios" : isAndroid ? "android" : "desktop" });
+      if (isIOS || isAndroid || !modal) return;          // phones go straight to their store (it shows "Open" if the app is installed)
+      e.preventDefault(); modal.hidden = false;
+    });
+  });
+})();

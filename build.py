@@ -17,7 +17,9 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else HERE
 DOMAIN = "https://www.joltpowerbank.com"   # change here if a different .com is registered
 WHATSAPP = "353870365888"
 WHATSAPP_DISPLAY = "+353 87 036 5888"
-APP_URL = "https://joltireland.com"        # TODO: replace with App Store / Google Play links
+IOS_URL = "https://apps.apple.com/ie/app/joltireland/id6471393616"
+ANDROID_URL = "https://play.google.com/store/apps/details?id=com.joltireland.charge"
+APP_URL = IOS_URL   # fallback href; site.js sends Android phones to Google Play and shows both stores on desktop
 PRIVACY = "https://m.joltireland.com/content/privacy_policy.html"
 
 LOGO = '''<a href="/" class="logo" aria-label="Jolt home">JO<svg viewBox="0 0 14 24" aria-hidden="true"><rect x="1" y="3" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4.5" y="0.5" width="5" height="3" rx="1" fill="currentColor"/><path d="M8 7 4.5 14H7l-1 5 3.5-7H7z" fill="var(--green)"/></svg>T</a>'''
@@ -166,10 +168,12 @@ FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
 <div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
 <div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/customers/">Our customers</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
-<div><h4>Customers</h4><a href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
+<div><h4>Customers</h4><a class="app-link" href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
 </div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
 <a class="wa-float" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue" aria-label="Message Jolt on WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
+<div class="app-modal" id="app-modal" hidden><div class="app-modal-card" role="dialog" aria-modal="true" aria-labelledby="app-modal-h"><button type="button" class="app-modal-x" aria-label="Close">×</button><h3 id="app-modal-h">Get the Jolt app</h3><p>Find stations near you, rent a power bank and return it anywhere.</p><div class="app-modal-btns"><a class="btn btn-green" href="{IOS_URL}" target="_blank" rel="noopener">App Store (iPhone)</a><a class="btn btn-ghost" href="{ANDROID_URL}" target="_blank" rel="noopener">Google Play (Android)</a></div></div></div>
+<script>window.JOLT_APP={{ios:"{IOS_URL}",android:"{ANDROID_URL}"}};</script>
 <script src="/assets/site.js?v={JS_V}" defer></script>
 </body></html>'''
 
@@ -249,7 +253,8 @@ def page(key):
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations.</h1>
 <p class="lead">We install and maintain it, and you earn a share of every rental.</p>
-<figure class="hero-map"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><figcaption><i></i><span class="long">Live on the Jolt app · Dublin</span><span class="short">Live · Dublin</span></figcaption></figure>
+<a class="btn btn-green btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find a power bank</a>
+<a class="hero-map app-link" href="{APP_URL}" aria-label="Open the Jolt app to find a power bank"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><span class="hero-map-cap"><i></i><span class="long">Live on the Jolt app · Dublin</span><span class="short">Live · Dublin</span></span></a>
 </div>
 <div class="brands" id="brands" data-design="1">
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
