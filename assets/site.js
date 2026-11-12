@@ -165,9 +165,9 @@ const WHATSAPP = "353870365888";
 
 /* ---------- Brand showcase: 5 preview designs (pick one, then delete the others + the switcher) ---------- */
 (function () {
-  const root = document.getElementById("brands"), stage = document.getElementById("brand-stage");
-  if (!root || !stage) return;
-  const V = JSON.parse(document.getElementById("venue-data").textContent);
+  const dataEl = document.getElementById("venue-data");
+  if (!dataEl) return;
+  const V = JSON.parse(dataEl.textContent);
   const withLogo = V.filter(v => v.logo), noLogo = V.filter(v => !v.logo);
   // interleave: roughly 1 name tile per logo tile so every venue appears, logos lead
   const MIX = []; { let i = 0, j = 0; while (i < withLogo.length || j < noLogo.length) { if (i < withLogo.length) MIX.push(withLogo[i++]); if (j < noLogo.length) MIX.push(noLogo[j++]); if (j < noLogo.length && i >= withLogo.length) MIX.push(noLogo[j++]); } }
@@ -177,9 +177,7 @@ const WHATSAPP = "353870365888";
     ? `<div class="bt bt-logo ${cls}" title="${esc(v.name)}"><img src="/assets/venues/${v.logo}" alt="${esc(v.name)}" loading="lazy" decoding="async"></div>`
     : `<div class="bt bt-name ${cls}"><span>${esc(v.name)}</span><i>${SHORT[v.category] || ""}</i></div>`;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let cleanup = () => {};
-
-  const designs = {
+  const makeDesigns = stage => ({
     /* 1. Drum: a horizontal cylinder rolling toward the viewer; faces are refilled while they're out of sight */
     1() {
       const FACES = 18, PER = 4, STEP = 360 / FACES;
@@ -298,11 +296,34 @@ const WHATSAPP = "353870365888";
       }, 600);
       return () => { cancelAnimationFrame(raf); clearInterval(id); };
     },
-  };
+  });
 
+  /* each .brands block gets its own stage; animations only run while the block is on screen */
+  function Showcase(root) {
+    const stage = root.querySelector(".brand-stage"), designs = makeDesigns(stage);
+    let cleanup = () => {}, current = null, visible = false;
+    const run = () => { cleanup(); cleanup = designs[current]() || (() => {}); };
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting && !visible) { visible = true; run(); }
+      else if (!e.isIntersecting && visible) { visible = false; cleanup(); cleanup = () => {}; }
+    }), { rootMargin: "100px" });
+    io.observe(root);
+    return {
+      stage,
+      set(d) { current = designs[d] ? String(d) : "1"; root.dataset.design = current; if (visible) run(); },
+    };
+  }
+
+  // fixed-design blocks (customers page)
+  document.querySelectorAll(".brands[data-fixed]").forEach(r => Showcase(r).set(r.dataset.design));
+
+  // home page block + top-bar switcher
+  const homeRoot = document.getElementById("brands");
+  if (!homeRoot) return;
+  const home = Showcase(homeRoot), stage = home.stage;
   function show(d) {
-    cleanup(); d = designs[d] ? d : "1";
-    root.dataset.design = d; cleanup = designs[d]() || (() => {});
+    d = ["1","2","3","4","5"].includes(String(d)) ? String(d) : "1";
+    home.set(d);
     document.querySelectorAll("#design-switch button").forEach(b => b.classList.toggle("is-active", b.dataset.d === d));
     try { localStorage.setItem("jolt-design", d); } catch (_) {}
   }

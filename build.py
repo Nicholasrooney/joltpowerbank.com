@@ -89,6 +89,12 @@ ST = {x["slug"]: x for x in STATIONS}
 
 e = html.escape
 
+import hashlib
+def _v(path):
+    with open(os.path.join(HERE, path), "rb") as f:
+        return hashlib.sha1(f.read()).hexdigest()[:8]
+CSS_V, JS_V = _v("assets/style.css"), _v("assets/site.js")
+
 def load_testimonials():
     p = os.path.join(HERE, "content", "testimonials.json")
     with open(p, encoding="utf-8") as f:
@@ -144,7 +150,7 @@ def head(key, P=None):
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/style.css?v={CSS_V}">
 <!-- GA4: paste the gtag snippet here once the property is created -->
 <script type="application/ld+json">{json.dumps(ld_org)}</script><script type="application/ld+json">{json.dumps(ld_faq)}</script>
 </head>
@@ -152,19 +158,19 @@ def head(key, P=None):
 
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
-<nav class="links"><a href="/stations/">Stations</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
+<nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
 <div class="nav-cta"><a class="btn btn-green sm" href="/#setup-card">Get a free station</a></div>
 </div></header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
 <div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
-<div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
+<div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/customers/">Our customers</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
 <div><h4>Customers</h4><a href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
 </div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
 <a class="wa-float" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue" aria-label="Message Jolt on WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
-<script src="/assets/site.js" defer></script>
+<script src="/assets/site.js?v={JS_V}" defer></script>
 </body></html>'''
 
 MARKETS = [("IE", "Ireland"), ("UK", "UK"), ("EU", "EU"), ("INTL", "International")]
@@ -339,6 +345,38 @@ def station_page(x):
 <section class="sec alt"><div class="wrap"><div class="sec-head"><h2>Other {x["type"].lower()} stations</h2><a class="textlink" href="/stations/">All stations →</a></div><div class="st-grid">{others}</div></div></section>
 </main>""" + FOOTER
 
+DESIGN_INFO = [
+  ("1", "Drum", "Rows of venues on a cylinder that rolls toward you. Venues on the hidden side are swapped as it turns, so every customer comes round."),
+  ("2", "Flip wall", "A grid of tiles; one flips to a new venue every moment. Calm, readable, and shows a lot at once."),
+  ("3", "Runway", "Columns of venues streaming toward you on a tilted floor, out of the distance."),
+  ("4", "Categories", "Counts by venue type with a grid for each. Cycles on its own; visitors can tap a category."),
+  ("5", "Orbit", "Venues circling a Jolt station on tilted rings. The front is bigger and brighter, the back fades."),
+]
+
+def customers_page():
+    V = load_venues()
+    P = {"path": "/customers/", "lang": "en", "title": f"Our Customers | {len(V)} Venues Using Jolt Power Bank Stations",
+         "desc": f"{len(V)} pubs, hotels, hospitals, nightclubs and venues across Ireland already use Jolt power bank stations."}
+    data = f'<script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>'
+    blocks = "".join(f"""<section class="cust-design" id="design-{n}"><div class="cust-design-head"><span class="cust-num">Option {n}</span><h2>{name}</h2><p>{desc}</p></div>
+<div class="brands" data-fixed data-design="{n}"><div class="brand-stage" aria-label="Venues that use Jolt, {name.lower()} layout"></div></div></section>""" for n, name, desc in DESIGN_INFO)
+    cats = {}
+    for v in V: cats.setdefault(v["category"], []).append(v["name"])
+    order = sorted(cats, key=lambda c: -len(cats[c]))
+    directory = "".join(f'<div class="dir-group"><h3>{c} <b>{len(cats[c])}</b></h3><ul>{"".join(f"<li>{e(n)}</li>" for n in sorted(cats[c], key=lambda x: x.lower().removeprefix("the ")))}</ul></div>' for c in order)
+    jump = "".join(f'<a href="#design-{n}">{n}. {name}</a>' for n, name, _ in DESIGN_INFO)
+    return head(None, P) + NAV + f"""
+<main><section class="sec page-top"><div class="wrap">
+<span class="pill">Ireland's busiest venues</span>
+<h1 class="page-h1">Our customers</h1>
+<p class="lead"><b class="g">{len(V)} venues</b> already use Jolt: pubs, hotels, hospitals, nightclubs, stadiums and more.</p>
+<div class="cust-jump"><span>Showcase options:</span>{jump}</div>
+{data}
+{blocks}
+<section class="cust-dir" id="directory"><h2>Every venue, by type</h2>{directory}</section>
+<div class="panel st-help"><div><h3>Want your venue on this list?</h3><p>Stations are installed free, and you earn a share of every rental.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+</div></section></main>""" + FOOTER
+
 def thanks_page():
     return head(None).replace(f'<link rel="canonical" href="{DOMAIN}/">', f'<link rel="canonical" href="{DOMAIN}/thank-you/"><meta name="robots" content="noindex">') + NAV + f'''
 <main><section class="hero root"><div class="wrap narrow">
@@ -358,6 +396,7 @@ write("ie/index.html", page("ie"))
 write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
 write("stations/index.html", stations_index())
+write("customers/index.html", customers_page())
 for x in STATIONS:
     write(f"stations/{x['slug']}/index.html", station_page(x))
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
@@ -367,7 +406,7 @@ for k in (None, "ie", "uk"):
     for a in ("ie", "uk"):
         sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
-for u in ["/stations/"] + [f"/stations/{x['slug']}/" for x in STATIONS]:
+for u in ["/stations/", "/customers/"] + [f"/stations/{x['slug']}/" for x in STATIONS]:
     sm += f"<url><loc>{DOMAIN}{u}</loc></url>\n"
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)
