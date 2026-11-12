@@ -22,7 +22,7 @@ ANDROID_URL = "https://play.google.com/store/apps/details?id=com.joltireland.cha
 APP_URL = IOS_URL   # fallback href; site.js sends Android phones to Google Play and shows both stores on desktop
 PRIVACY = "https://m.joltireland.com/content/privacy_policy.html"
 
-LOGO = '''<a href="/" class="logo" aria-label="Jolt home">JO<svg viewBox="0 0 14 24" aria-hidden="true"><rect x="1" y="3" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4.5" y="0.5" width="5" height="3" rx="1" fill="currentColor"/><path d="M8 7 4.5 14H7l-1 5 3.5-7H7z" fill="var(--green)"/></svg>T</a>'''
+LOGO = '''<a href="/" class="logo" aria-label="Jolt home"><img src="/assets/brand/jolt-logo-white.svg" alt="Jolt" width="436" height="142"></a>'''
 
 # Landing-page variants. key None = main page.
 PAGES = {
@@ -260,7 +260,7 @@ def page(key):
 <h1 class="hero-h1">Power Bank Stations</h1>
 <div class="hero-btns"><a class="btn btn-green hb" href="#setup-card">Get free power bank station</a><a class="btn btn-green hb btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find nearest power bank</a></div>
 <div class="brands" id="brands" data-design="1">
-<div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
+<div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt" hidden></div>
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>
 </div>

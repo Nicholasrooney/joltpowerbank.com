@@ -8,6 +8,7 @@
   RewriteCond %{REQUEST_URI} !^/gate\.php$
   RewriteCond %{REQUEST_URI} !^/google033f461ff1ae5955\.html$
   RewriteCond %{REQUEST_URI} !^/assets/fonts/
+  RewriteCond %{REQUEST_URI} !^/assets/brand/
   RewriteCond %{HTTP_COOKIE} !(^|;\s*)jolt_gate=8a5f583463b8bda299b4cb071dc5b5bd(;|$)
   RewriteRule ^ /gate.php [L]
 </IfModule>

@@ -22,7 +22,8 @@ h3{font-size:1.15rem;font-weight:700;margin-bottom:.4rem}
 .nav{position:sticky;top:0;z-index:20;background:rgba(5,5,5,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:1rem}
 .logo{display:inline-flex;align-items:center;font-weight:900;font-size:1.6rem;text-decoration:none;color:#fff}
-.logo svg{height:.95em;width:auto;margin:0 .06em;color:#fff}
+.logo img{display:block;height:30px;width:auto}
+@media(max-width:600px){.logo img{height:24px}}
 .links{display:flex;gap:2rem}.links a{text-decoration:none;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.links a:hover{color:#fff}
 .nav-cta{display:flex;align-items:center;gap:.8rem}
 .region{font-size:.82rem;text-decoration:none;border:1px solid var(--line);padding:.45rem .7rem;border-radius:99px;color:var(--muted)}
@@ -394,3 +395,4 @@ a.hero-map:hover{transform:translateY(-2px);box-shadow:0 22px 50px rgba(0,0,0,.6
 .specs-h{font-family:Archivo,sans-serif;font-size:1rem;letter-spacing:.14em;text-transform:uppercase;margin:1.4rem 0 .6rem;color:#cfd8cf}
 .specs-src{font-size:.8rem;color:var(--muted,#9aa39a);margin:.6rem 0 1.2rem}
 .st-detail .stage.big img,.st-card .stage img{object-fit:contain;object-position:center}
+.brand-stage[hidden]{display:none!important}
