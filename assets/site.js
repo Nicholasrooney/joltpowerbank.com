@@ -177,22 +177,23 @@ const WHATSAPP = "353870365888";
     ? `<div class="bt bt-logo ${cls}" title="${esc(v.name)}"><img src="/assets/venues/${v.logo}" alt="${esc(v.name)}" loading="lazy" decoding="async"></div>`
     : `<div class="bt bt-name ${cls}"><span>${esc(v.name)}</span><i>${SHORT[v.category] || ""}</i></div>`;
   // "Reduce motion" (e.g. Windows "Show animations" off) slows the showcase down instead of freezing it
+  const pair = v => `<div class="bt-pair">${tile(v)}<div class="bt-info"><b>${esc(v.name)}</b><span>${esc(v.location || SHORT[v.category] || "")}</span></div></div>`;
   const reduce = false, SPEED = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.6 : 1;
   const makeDesigns = stage => ({
     /* 1. Drum: the runway's flow, curved over a big cylinder. Rows come over the crest and roll down toward you.
           Same 4 columns, tile size and surface speed as the runway; rows are refilled while they're out of sight. */
     1() {
-      const FACES = 20, PER = 4, STEP = 360 / FACES;
+      const FACES = 20, PER = 2, STEP = 360 / FACES;   // each row: 2 pairs of [logo | name + location]
       const W = stage.clientWidth, H = stage.clientHeight;
       const DW = W * 1.16, colW = (DW - 3 * 10) / 4, faceH = colW * 5 / 9 + 10, PUSH = 170;   // wider drum, pushed back for depth           // tile 9:5 + 10px gap, like the runway
       const r = faceH / (2 * Math.tan(Math.PI / FACES));
       stage.innerHTML = `<div class="drum-wrap"><div class="drum" style="height:${faceH}px;width:${DW}px;left:${(W - DW) / 2}px;top:${H - faceH * 1.05}px"></div></div>`;
       const drum = stage.querySelector(".drum");
-      let next = 0; const take = () => { const out = []; for (let k = 0; k < PER; k++) out.push(MIX[next++ % MIX.length]); return out; };
+      let next = 0; const take = () => { const out = []; for (let k = 0; k < PER; k++) out.push(withLogo[next++ % withLogo.length]); return out; };   // logo venues only
       const faces = [];
       for (let i = 0; i < FACES; i++) {
         const f = document.createElement("div"); f.className = "drum-face";
-        f.style.transform = `rotateX(${i * STEP}deg) translateZ(${r}px)`; f.innerHTML = take().map(v => tile(v)).join("");
+        f.style.transform = `rotateX(${i * STEP}deg) translateZ(${r}px)`; f.innerHTML = take().map(pair).join("");
         drum.appendChild(f); faces.push({ el: f, base: i * STEP, back: false });
       }
       const degPerMs = (50 / r) * (180 / Math.PI) / 1000;                      // 50px/s along the surface = runway speed
@@ -203,7 +204,7 @@ const WHATSAPP = "353870365888";
         faces.forEach(f => {
           const a = ((f.base + angle) % 360 + 360) % 360;
           const isBack = a > 110 && a < 250;
-          if (isBack && !f.back) f.el.innerHTML = take().map(v => tile(v)).join("");
+          if (isBack && !f.back) f.el.innerHTML = take().map(pair).join("");
           f.back = isBack;
         });
         raf = requestAnimationFrame(loop);
@@ -264,21 +265,35 @@ const WHATSAPP = "353870365888";
       return () => clearInterval(timer);
     },
 
-    /* 5. Orbit: venues on tilted elliptical orbits around a Jolt station (front = bigger + brighter) */
+    /* 5. Orbit: logo venues only, fixed (no swapping). Best-known venues are the biggest tiles, on the outer ring,
+          which passes closest to the viewer. The inner ring is wide enough to clear the station. */
     5() {
-      const W = stage.clientWidth, H = stage.clientHeight, cx = W / 2, cy = H / 2;
-      const rings = [{ n: 6, rx: W * 0.25, ry: H * 0.13, sp: 0.00016 }, { n: 9, rx: W * 0.36, ry: H * 0.24, sp: -0.00011 }, { n: 12, rx: W * 0.46, ry: H * 0.38, sp: 0.00008 }];
-      let next = 0; const pool = [...withLogo, ...noLogo];
-      const pick = () => pool[next++ % pool.length];
-      stage.innerHTML = `<div class="orbit"><div class="orbit-core"><img src="/assets/stations/countertop-12-angle-sm.webp" alt="Jolt station"></div></div>`;
+      const W = stage.clientWidth, H = stage.clientHeight, cx = W / 2, cy = H * 0.47;
+      const by = Object.fromEntries(withLogo.map(v => [v.name, v]));
+      const TOP = ["RDS", "Tesco", "O'Donoghue's", "St Vincent's University Hospital", "Cork University Hospital", "St James's Hospital",
+                   "Beaumont Hospital", "Connolly Hospital", "The National Maternity Hospital", "Children's Health Ireland at Crumlin",
+                   "Wexford General Hospital", "Portiuncula University Hospital", "Jameson Distillery Bow St", "Whelan's"];
+      const MID = ["Clayton Hotel Ballsbridge", "Dicey's Garden", "Pawn Shop", "The George", "The Workman's Club", "Slattery's",
+                   "Café en Seine", "The Harbour Bar", "Temple Bar Hotel Dublin", "Alfie's", "Harcourt Hotel", "Gleeson's Fresh Foods"];
+      const used = new Set([...TOP, ...MID]);
+      const REST = withLogo.filter(v => !used.has(v.name)).map(v => v.name).slice(0, 10);
+      const pick = list => list.map(n => by[n]).filter(Boolean);
+      const small = W < 600;
+      const rings = [   // inner -> outer; sizes in px
+        { list: pick(REST), rx: W * 0.33, ry: H * 0.22, sp: 0.00012, size: small ? 54 : 66 },
+        { list: pick(MID),  rx: W * 0.41, ry: H * 0.32, sp: -0.00009, size: small ? 64 : 80 },
+        { list: pick(TOP),  rx: W * 0.47, ry: H * 0.43, sp: 0.00007, size: small ? 76 : 98 },
+      ];
+      rings.forEach(g => { g.rx = Math.min(g.rx, W / 2 - g.size * 0.62); });     // keep every tile inside the frame
+      stage.innerHTML = `<div class="orbit"><div class="orbit-core" style="top:${cy}px"><img src="/assets/stations/countertop-12-angle-sm.webp" alt="Jolt station"></div></div>`;
       const orbit = stage.querySelector(".orbit"), items = [];
       rings.forEach((g, ri) => {
         const ring = document.createElement("div"); ring.className = "orbit-path";
         ring.style.cssText = `width:${g.rx * 2}px;height:${g.ry * 2}px;left:${cx - g.rx}px;top:${cy - g.ry}px`; orbit.appendChild(ring);
-        for (let k = 0; k < g.n; k++) {
-          const el = document.createElement("div"); el.className = "orbit-up"; el.innerHTML = tile(pick());
-          orbit.appendChild(el); items.push({ el, g, a: (Math.PI * 2 / g.n) * k + ri * 0.4 });
-        }
+        g.list.forEach((v, k) => {
+          const el = document.createElement("div"); el.className = "orbit-up"; el.style.width = g.size + "px"; el.innerHTML = tile(v);
+          orbit.appendChild(el); items.push({ el, g, a: (Math.PI * 2 / g.list.length) * k + ri * 0.5 });
+        });
       });
       let last = performance.now(), raf;
       const loop = t => {
@@ -286,20 +301,15 @@ const WHATSAPP = "353870365888";
         items.forEach(it => {
           it.a += it.g.sp * dt * SPEED;
           const sn = Math.sin(it.a), depth = (sn + 1) / 2;                       // 0 = back (top), 1 = front (bottom)
-          const x = cx + Math.cos(it.a) * it.g.rx, y = cy + sn * it.g.ry, sc = 0.62 + depth * 0.5;
-          it.el.style.transform = `translate(${x - 40}px, ${y - 22}px) scale(${sc})`;
-          it.el.style.zIndex = sn > 0 ? 3 + Math.round(depth * 10) : 1;
-          it.el.style.opacity = 0.35 + depth * 0.65;
+          const x = cx + Math.cos(it.a) * it.g.rx, y = cy + sn * it.g.ry, sc = 0.7 + depth * 0.45;
+          it.el.style.transform = `translate(${x - it.g.size / 2}px, ${y - it.g.size * 0.28}px) scale(${sc})`;
+          it.el.style.zIndex = sn > 0.15 ? 3 + Math.round(depth * 10) : 1;      // front half passes in front of the station
+          it.el.style.opacity = 0.45 + depth * 0.55;
         });
         raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
-      const id = setInterval(() => {
-        if (reduce) return;
-        const back = items.filter(i => Math.sin(i.a) < -0.3); if (!back.length) return;   // swap only tiles at the back
-        const it = back[Math.floor(Math.random() * back.length)]; it.el.innerHTML = tile(pick());
-      }, 600);
-      return () => { cancelAnimationFrame(raf); clearInterval(id); };
+      return () => cancelAnimationFrame(raf);
     },
   });
 
