@@ -3,6 +3,13 @@
   RewriteEngine On
   RewriteRule ^(data|includes)(/|$) - [F,L]
   RewriteRule \.(sqlite|sqlite-wal|sqlite-shm)$ - [F,L]
+
+  # Password gate (0000) over the whole site. Remove this block to make the site public again.
+  RewriteCond %{REQUEST_URI} !^/gate\.php$
+  RewriteCond %{REQUEST_URI} !^/google033f461ff1ae5955\.html$
+  RewriteCond %{REQUEST_URI} !^/assets/fonts/
+  RewriteCond %{HTTP_COOKIE} !(^|;\s*)jolt_gate=8a5f583463b8bda299b4cb071dc5b5bd(;|$)
+  RewriteRule ^ /gate.php [L]
 </IfModule>
 <FilesMatch "\.(sqlite|sqlite-wal|sqlite-shm)$">
   Require all denied
