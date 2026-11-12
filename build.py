@@ -94,6 +94,10 @@ def load_testimonials():
     with open(p, encoding="utf-8") as f:
         return json.load(f)
 
+def load_venues():
+    with open(os.path.join(HERE, "content", "venues.json"), encoding="utf-8") as f:
+        return json.load(f)
+
 def load_logos():
     d = os.path.join(HERE, "assets", "logos")
     if not os.path.isdir(d):
@@ -223,6 +227,7 @@ def setup_card(preset):
 def page(key):
     P = PAGES[key]
     T = load_testimonials()
+    V = load_venues()
     half = (len(T) + 1) // 2
     row1 = "".join(testimonial_html(t) for t in T[:half])
     row2 = "".join(testimonial_html(t) for t in T[half:]) or row1
@@ -236,16 +241,18 @@ def page(key):
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations. <em>Zero cost to your venue.</em></h1>
 <p class="lead">We install it, keep it stocked and maintain it. Your customers rent a charger in seconds. You earn a share of every rental.</p>
-<div class="proof">
+<div class="brands" id="brands" data-design="1">
+<div class="brands-head"><span class="brands-count"><b>{len(V)}</b> venues already use Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland</span></div>
+<div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
+<script type="application/json" id="venue-data">{json.dumps(V, ensure_ascii=False)}</script>
+</div>
 <p class="proof-label">What venues say</p>
 {conveyor(row1, "tconv")}
-{conveyor(row2, "tconv", reverse=True)}
-<p class="proof-label">Trusted by venues across Ireland &amp; the UK</p>
-{conveyor(logos, "lconv")}
-</div>
 </div>
 {setup_card(P["market"])}
 </div></section>
+<!-- DESIGN PREVIEW SWITCHER: remove this block once a brand design is chosen -->
+<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Drum</button><button data-d="2">2 Flip wall</button><button data-d="3">3 Runway</button><button data-d="4">4 Categories</button><button data-d="5">5 Orbit</button></div>
 
 <section class="band"><div class="wrap band-in">
 <div><b>0</b><span>cost to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>

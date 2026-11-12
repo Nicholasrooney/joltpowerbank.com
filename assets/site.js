@@ -162,3 +162,155 @@ const WHATSAPP = "353870365888";
     main.src = t.dataset.src; main.alt = t.dataset.alt;
   }));
 })();
+
+/* ---------- Brand showcase: 5 preview designs (pick one, then delete the others + the switcher) ---------- */
+(function () {
+  const root = document.getElementById("brands"), stage = document.getElementById("brand-stage");
+  if (!root || !stage) return;
+  const V = JSON.parse(document.getElementById("venue-data").textContent);
+  const withLogo = V.filter(v => v.logo), noLogo = V.filter(v => !v.logo);
+  // interleave: roughly 1 name tile per logo tile so every venue appears, logos lead
+  const MIX = []; { let i = 0, j = 0; while (i < withLogo.length || j < noLogo.length) { if (i < withLogo.length) MIX.push(withLogo[i++]); if (j < noLogo.length) MIX.push(noLogo[j++]); if (j < noLogo.length && i >= withLogo.length) MIX.push(noLogo[j++]); } }
+  const SHORT = { "Hospitals & healthcare": "Hospital", "Hotels": "Hotel", "Nightclubs & late bars": "Late bar", "Pubs & bars": "Pub", "Restaurants & cafés": "Café & dining", "Retail, transport & campus": "Retail & transport", "Venues, sport & attractions": "Venue" };
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const tile = (v, cls = "") => v.logo
+    ? `<div class="bt bt-logo ${cls}" title="${esc(v.name)}"><img src="/assets/venues/${v.logo}" alt="${esc(v.name)}" loading="lazy" decoding="async"></div>`
+    : `<div class="bt bt-name ${cls}"><span>${esc(v.name)}</span><i>${SHORT[v.category] || ""}</i></div>`;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let cleanup = () => {};
+
+  const designs = {
+    /* 1. Drum: a horizontal cylinder rolling toward the viewer; faces are refilled while they're out of sight */
+    1() {
+      const FACES = 18, PER = 4, STEP = 360 / FACES;
+      const faceH = 78, r = faceH / (2 * Math.tan(Math.PI / FACES));
+      stage.innerHTML = `<div class="drum-wrap"><div class="drum" style="--r:${r}px"></div></div>`;
+      const drum = stage.querySelector(".drum");
+      let next = 0; const take = () => { const out = []; for (let k = 0; k < PER; k++) out.push(MIX[next++ % MIX.length]); return out; };
+      const faces = [];
+      for (let i = 0; i < FACES; i++) {
+        const f = document.createElement("div"); f.className = "drum-face"; f.style.height = faceH + "px";
+        f.style.transform = `rotateX(${i * STEP}deg) translateZ(${r}px)`; f.innerHTML = take().map(v => tile(v)).join("");
+        drum.appendChild(f); faces.push({ el: f, base: i * STEP, back: false });
+      }
+      let angle = 0, last = performance.now(), raf;
+      const loop = t => {
+        const dt = Math.min(50, t - last); last = t; if (!reduce) angle -= dt * 0.012;   // negative = front face moves down, toward you
+        drum.style.transform = `translateZ(${-r}px) rotateX(${angle}deg)`;
+        faces.forEach(f => {
+          const a = ((f.base + angle) % 360 + 360) % 360;                 // 0 = facing viewer
+          const isBack = a > 120 && a < 240;
+          if (isBack && !f.back) f.el.innerHTML = take().map(v => tile(v)).join("");   // refill unseen faces with the next venues
+          f.back = isBack;
+        });
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+      return () => cancelAnimationFrame(raf);
+    },
+
+    /* 2. Flip wall: a grid of tiles; one flips to a new venue every ~0.7s */
+    2() {
+      const COLS = 4, ROWS = 5, N = COLS * ROWS; let next = 0;
+      const pick = () => MIX[next++ % MIX.length];
+      stage.innerHTML = `<div class="flipwall" style="--cols:${COLS}">${Array.from({ length: N }, () => `<div class="fw-cell"><div class="fw-card"><div class="fw-face">${tile(pick())}</div><div class="fw-face fw-back"></div></div></div>`).join("")}</div>`;
+      const cells = [...stage.querySelectorAll(".fw-card")]; let lastIdx = -1;
+      const id = setInterval(() => {
+        if (reduce) return;
+        let i; do { i = Math.floor(Math.random() * N); } while (i === lastIdx); lastIdx = i;
+        const c = cells[i], flipped = c.classList.contains("flipped");
+        c.querySelector(flipped ? ".fw-face:not(.fw-back)" : ".fw-back").innerHTML = tile(pick());
+        c.classList.toggle("flipped");
+      }, 700);
+      return () => clearInterval(id);
+    },
+
+    /* 3. Runway: columns of venues streaming toward you on a tilted plane */
+    3() {
+      const COLS = 4, per = Math.ceil(MIX.length / COLS);
+      const cols = Array.from({ length: COLS }, (_, c) => MIX.slice(c * per, (c + 1) * per));
+      stage.innerHTML = `<div class="runway"><div class="runway-plane">${cols.map((list, c) => {
+        const h = list.map(v => tile(v)).join("");
+        return `<div class="rw-col"><div class="rw-track" style="animation-duration:${90 + c * 12}s;animation-delay:-${c * 9}s">${h}${h}</div></div>`;
+      }).join("")}</div></div>`;
+      return () => {};
+    },
+
+    /* 4. Categories: counts per category; auto-cycles, click to pick */
+    4() {
+      const cats = [...new Set(V.map(v => v.category))].sort((a, b) => V.filter(v => v.category === b).length - V.filter(v => v.category === a).length);
+      const groups = [["All venues", MIX], ...cats.map(c => [c, V.filter(v => v.category === c).sort((a, b) => (b.logo ? 1 : 0) - (a.logo ? 1 : 0))])];
+      stage.innerHTML = `<div class="cats"><div class="cat-chips">${groups.map(([c, l], i) => `<button type="button" class="cat-chip" data-i="${i}">${c} <b>${l.length}</b><i></i></button>`).join("")}</div><div class="cat-grid"></div></div>`;
+      const grid = stage.querySelector(".cat-grid"), chips = [...stage.querySelectorAll(".cat-chip")];
+      let cur = 0, page = 0, timer, auto = true;
+      const SHOW = 12;   // 4 x 3
+      const render = () => {
+        const list = groups[cur][1], start = (page * SHOW) % Math.max(1, list.length);
+        const items = list.length <= SHOW ? list : Array.from({ length: SHOW }, (_, k) => list[(start + k) % list.length]);
+        grid.innerHTML = items.map((v, k) => tile(v, "cat-in").replace('class="bt', `style="animation-delay:${k * 40}ms" class="bt`)).join("");
+        chips.forEach((c, i) => c.classList.toggle("is-active", i === cur));
+      };
+      const go = i => { cur = i; page = 0; render(); };
+      chips.forEach((c, i) => c.addEventListener("click", () => { auto = false; clearInterval(timer); go(i); }));
+      render();
+      timer = setInterval(() => {
+        if (!auto || reduce) return;
+        const list = groups[cur][1];
+        if (list.length > SHOW && page < 2) { page++; render(); } else go((cur + 1) % groups.length);
+      }, 3500);
+      return () => clearInterval(timer);
+    },
+
+    /* 5. Orbit: venues on tilted elliptical orbits around a Jolt station (front = bigger + brighter) */
+    5() {
+      const W = stage.clientWidth, H = stage.clientHeight, cx = W / 2, cy = H / 2;
+      const rings = [{ n: 6, rx: W * 0.25, ry: H * 0.13, sp: 0.00016 }, { n: 9, rx: W * 0.36, ry: H * 0.24, sp: -0.00011 }, { n: 12, rx: W * 0.46, ry: H * 0.38, sp: 0.00008 }];
+      let next = 0; const pool = [...withLogo, ...noLogo];
+      const pick = () => pool[next++ % pool.length];
+      stage.innerHTML = `<div class="orbit"><div class="orbit-core"><img src="/assets/stations/countertop-12-angle-sm.webp" alt="Jolt station"></div></div>`;
+      const orbit = stage.querySelector(".orbit"), items = [];
+      rings.forEach((g, ri) => {
+        const ring = document.createElement("div"); ring.className = "orbit-path";
+        ring.style.cssText = `width:${g.rx * 2}px;height:${g.ry * 2}px;left:${cx - g.rx}px;top:${cy - g.ry}px`; orbit.appendChild(ring);
+        for (let k = 0; k < g.n; k++) {
+          const el = document.createElement("div"); el.className = "orbit-up"; el.innerHTML = tile(pick());
+          orbit.appendChild(el); items.push({ el, g, a: (Math.PI * 2 / g.n) * k + ri * 0.4 });
+        }
+      });
+      let last = performance.now(), raf;
+      const loop = t => {
+        const dt = Math.min(50, t - last); last = t;
+        items.forEach(it => {
+          if (!reduce) it.a += it.g.sp * dt;
+          const sn = Math.sin(it.a), depth = (sn + 1) / 2;                       // 0 = back (top), 1 = front (bottom)
+          const x = cx + Math.cos(it.a) * it.g.rx, y = cy + sn * it.g.ry, sc = 0.62 + depth * 0.5;
+          it.el.style.transform = `translate(${x - 40}px, ${y - 22}px) scale(${sc})`;
+          it.el.style.zIndex = sn > 0 ? 3 + Math.round(depth * 10) : 1;
+          it.el.style.opacity = 0.35 + depth * 0.65;
+        });
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+      const id = setInterval(() => {
+        if (reduce) return;
+        const back = items.filter(i => Math.sin(i.a) < -0.3); if (!back.length) return;   // swap only tiles at the back
+        const it = back[Math.floor(Math.random() * back.length)]; it.el.innerHTML = tile(pick());
+      }, 600);
+      return () => { cancelAnimationFrame(raf); clearInterval(id); };
+    },
+  };
+
+  function show(d) {
+    cleanup(); d = designs[d] ? d : "1";
+    root.dataset.design = d; cleanup = designs[d]() || (() => {});
+    document.querySelectorAll("#design-switch button").forEach(b => b.classList.toggle("is-active", b.dataset.d === d));
+    try { localStorage.setItem("jolt-design", d); } catch (_) {}
+  }
+  let start = new URLSearchParams(location.search).get("design");
+  if (!start) { try { start = localStorage.getItem("jolt-design"); } catch (_) {} }
+  show(start || "1");
+  document.querySelectorAll("#design-switch button").forEach(b => b.addEventListener("click", () => {
+    show(b.dataset.d);
+    const u = new URL(location.href); u.searchParams.set("design", b.dataset.d); history.replaceState(null, "", u);
+  }));
+})();
