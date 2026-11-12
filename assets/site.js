@@ -140,6 +140,7 @@ const WHATSAPP = "353870365888";
 
     const result = $("#setup-result");
     result.classList.toggle("is-list", market === "EU" || market === "INTL");
+    result.hidden = !(market === "EU" || market === "INTL");   // recommended-setup box removed for IE/UK; still shows the EU / waitlist notice
     if (market === "EU") {
       $("#setup-label").textContent = "EU priority list";
       $("#setup-name").textContent = "We're expanding into the EU shortly";

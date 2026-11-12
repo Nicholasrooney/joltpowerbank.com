@@ -211,7 +211,7 @@ def setup_card(preset):
 <div class="setup-count"><strong id="setup-count">500</strong> customers a week<span id="setup-per"></span></div>
 </div>
 <div class="setup-meter" aria-hidden="true">{"".join('<i></i>' for _ in range(12))}</div>
-<div class="setup-result" id="setup-result" aria-live="polite">
+<div class="setup-result" id="setup-result" aria-live="polite" hidden>
 <span class="setup-result__label" id="setup-label">Recommended setup</span>
 <span class="setup-result__name" id="setup-name">Countertop 12</span>
 <span class="setup-result__price" id="setup-price">Cost to you: <strong>€0</strong></span>
@@ -259,7 +259,7 @@ def page(key):
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
 <h1 class="hero-h1">Power Bank Stations</h1>
-<div class="hero-btns"><a class="btn btn-green hb" href="#setup-card">Get free power bank station</a><a class="btn btn-ghost hb btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find nearest power bank</a></div>
+<div class="hero-btns"><a class="btn btn-green hb" href="#setup-card">Get free power bank station</a><a class="btn btn-green hb btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find nearest power bank</a></div>
 <div class="brands" id="brands" data-design="1">
 <div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
