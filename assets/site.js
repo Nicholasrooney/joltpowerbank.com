@@ -385,7 +385,7 @@ const WHATSAPP = "353870365888";
       if (e.isIntersecting && !visible) { visible = true; run(); }
       else if (!e.isIntersecting && visible) { visible = false; cleanup(); cleanup = () => {}; }
     }), { rootMargin: "100px" });
-    io.observe(root);
+    io.observe(stage);   // observe the stage (the root may be display:contents on phones)
     return {
       stage,
       set(d) { current = designs[d] ? String(d) : "1"; root.dataset.design = current; if (visible) run(); },
@@ -405,9 +405,7 @@ const WHATSAPP = "353870365888";
     document.querySelectorAll("#design-switch button").forEach(b => b.classList.toggle("is-active", b.dataset.d === d));
     try { localStorage.setItem("jolt-design", d); } catch (_) {}
   }
-  let start = new URLSearchParams(location.search).get("design");
-  if (!start) { try { start = localStorage.getItem("jolt-design"); } catch (_) {} }
-  show(start || "1");
+  show("1");   // Orbit only for now (other designs kept in code; switcher removed)
   document.querySelectorAll("#design-switch button").forEach(b => b.addEventListener("click", () => {
     show(b.dataset.d); if (window.track) track("design_switch", b.textContent.trim());
     const r = stage.getBoundingClientRect();                       // bring the showcase into view if it's off screen
@@ -421,6 +419,7 @@ const WHATSAPP = "353870365888";
   const top = document.querySelector(".hero-top"), map = top && top.querySelector(".hero-map"), h1 = top && top.querySelector("h1");
   if (!map || !h1) return;
   function place() {
+    if (innerWidth <= 900) { map.removeAttribute("style"); map.classList.remove("is-small"); top.style.minHeight = ""; return; }   // phone: map sits lower down in normal flow (CSS)
     const r = document.createRange(); r.selectNodeContents(h1);
     const lines = [...r.getClientRects()].filter(x => x.width > 2);
     const lead = top.querySelector(".lead");

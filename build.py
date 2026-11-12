@@ -252,15 +252,13 @@ def page(key):
     logos = logos_html(load_logos())
     venues = "".join(f'<article class="card"><h3>{t}</h3><p>{d}</p></article>' for t, d in VENUES)
     faq = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQ)
-    return head(key) + NAV + '''<!-- DESIGN PREVIEW SWITCHER: remove this block once a brand design is chosen -->
-<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Orbit</button><button data-d="2">2 Drum</button><button data-d="3">3 Categories</button><button data-d="4">4 Flip wall</button><button data-d="5">5 Runway</button></div>''' + f'''
+    return head(key) + NAV + f'''
 <main>
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
 <div class="hero-top">
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations.</h1>
-<p class="lead">We install and maintain it, and you earn a share of every rental.</p>
 <a class="btn btn-green btn-find app-link" href="{APP_URL}"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>Find a power bank</a>
 <a class="hero-map app-link" href="{APP_URL}" aria-label="Open the Jolt app to find a power bank"><img src="/assets/app/map-dublin-hero.webp" alt="Jolt app map: hundreds of Jolt stations across Dublin" width="640" height="533"><span class="hero-map-cap"><i></i><span class="long">Live on the Jolt app · Dublin</span><span class="short">Live · Dublin</span></span></a>
 </div>
