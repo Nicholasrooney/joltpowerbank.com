@@ -542,6 +542,9 @@ for a in AREAS:
     write(f"areas/{a['slug']}/index.html", area_page(a))
 for x in STATIONS:
     write(f"stations/{x['slug']}/index.html", station_page(x))
+# Google Search Console verification file (must stay at the site root)
+import shutil
+shutil.copy(os.path.join(HERE, "static_google033f461ff1ae5955.html"), os.path.join(OUT, "google033f461ff1ae5955.html"))
 write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
 sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n'
 for k in (None, "ie", "uk"):
