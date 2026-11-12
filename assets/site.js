@@ -311,6 +311,8 @@ const WHATSAPP = "353870365888";
   show(start || "1");
   document.querySelectorAll("#design-switch button").forEach(b => b.addEventListener("click", () => {
     show(b.dataset.d);
+    const r = stage.getBoundingClientRect();                       // bring the showcase into view if it's off screen
+    if (r.top < 120 || r.bottom > innerHeight) stage.scrollIntoView({ behavior: "smooth", block: "center" });
     const u = new URL(location.href); u.searchParams.set("design", b.dataset.d); history.replaceState(null, "", u);
   }));
 })();

@@ -234,7 +234,8 @@ def page(key):
     logos = logos_html(load_logos())
     venues = "".join(f'<article class="card"><h3>{t}</h3><p>{d}</p></article>' for t, d in VENUES)
     faq = "".join(f'<details><summary>{q}</summary><p>{a}</p></details>' for q, a in FAQ)
-    return head(key) + NAV + f'''
+    return head(key) + NAV + '''<!-- DESIGN PREVIEW SWITCHER: remove this block once a brand design is chosen -->
+<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Drum</button><button data-d="2">2 Flip wall</button><button data-d="3">3 Runway</button><button data-d="4">4 Categories</button><button data-d="5">5 Orbit</button></div>''' + f'''
 <main>
 <section class="hero"><div class="wrap hero-in">
 <div class="hero-copy">
@@ -251,8 +252,7 @@ def page(key):
 </div>
 {setup_card(P["market"])}
 </div></section>
-<!-- DESIGN PREVIEW SWITCHER: remove this block once a brand design is chosen -->
-<div class="design-switch" id="design-switch" role="group" aria-label="Preview brand designs"><span>Brand design</span><button data-d="1">1 Drum</button><button data-d="2">2 Flip wall</button><button data-d="3">3 Runway</button><button data-d="4">4 Categories</button><button data-d="5">5 Orbit</button></div>
+
 
 <section class="band"><div class="wrap band-in">
 <div><b>0</b><span>cost to install</span></div><div><b>6000mAh</b><span>power banks</span></div><div><b>3-in-1</b><span>built-in cables</span></div><div><b>24/7</b><span>rent and return</span></div>

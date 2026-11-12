@@ -245,10 +245,12 @@ details p{color:var(--muted);margin-top:.6rem}
 .orbit-up{position:absolute;left:0;top:0;width:80px;will-change:transform}
 .orbit-up .bt{border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,.6)}
 .orbit-up .bt-name{padding:.2rem .3rem}.orbit-up .bt-name span{font-size:.58rem}.orbit-up .bt-name i{display:none}
-/* preview switcher */
-.design-switch{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:4px;padding:6px;border-radius:99px;background:rgba(12,15,12,.92);border:1px solid #2a352a;box-shadow:0 10px 40px rgba(0,0,0,.6);backdrop-filter:blur(8px);max-width:calc(100vw - 100px);overflow-x:auto}
-.design-switch span{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 .6rem;white-space:nowrap}
-.design-switch button{font:600 .8rem Inter,sans-serif;color:#c9d1c9;background:transparent;border:0;border-radius:99px;padding:.5rem .8rem;cursor:pointer;white-space:nowrap}
-.design-switch button.is-active{background:var(--green);color:#041a0a}
+/* preview switcher: sits in the top bar, under the menu */
+.design-switch{position:sticky;top:68px;z-index:19;display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:rgba(10,14,10,.95);border-bottom:1px solid #2a352a;backdrop-filter:blur(10px);overflow-x:auto;white-space:nowrap}
+.design-switch span{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);padding-right:.4rem}
+.design-switch button{font:600 .85rem Inter,sans-serif;color:#dfe5df;background:#141a14;border:1px solid #2a352a;border-radius:99px;padding:.45rem .95rem;cursor:pointer}
+.design-switch button:hover{border-color:var(--green)}
+.design-switch button.is-active{background:var(--green);border-color:var(--green);color:#041a0a}
+@media(max-width:700px){.design-switch{justify-content:flex-start}}
 @media(max-width:560px){.brand-stage{height:400px}.drum-face{grid-template-columns:repeat(3,1fr)}.drum-face .bt:nth-child(4){display:none}.cat-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:900px){.hero-in{align-items:stretch}.hero-copy{width:100%;max-width:100%}.brands,.brand-stage{max-width:100%}}
