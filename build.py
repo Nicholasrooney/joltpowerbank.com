@@ -247,7 +247,7 @@ def page(key):
 <div class="hero-copy">
 <span class="pill">4,000+ locations across Ireland &amp; the UK</span>
 <h1>Free power bank stations.</h1>
-<p class="lead">We install it, keep it stocked and maintain it. Your customers rent a charger in seconds. You earn a share of every rental.</p>
+<p class="lead">We install and maintain it, and you earn a share of every rental.</p>
 <div class="brands" id="brands" data-design="1">
 <div class="brands-head"><span class="brands-count"><b>4,000+</b> venues have already used Jolt</span><span class="brands-sub">Pubs, hotels, hospitals and venues across Ireland &amp; the UK</span></div>
 <div class="brand-stage" id="brand-stage" aria-label="Venues that use Jolt"></div>
