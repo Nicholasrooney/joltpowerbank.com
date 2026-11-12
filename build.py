@@ -153,7 +153,15 @@ def head(key, P=None):
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css?v={CSS_V}">
-<!-- GA4: paste the gtag snippet here once the property is created -->
+<!-- Google tag (GTM-W3RCSHQW) with Consent Mode v2: analytics/ads cookies stay off until the visitor accepts -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('consent', 'default', {{ad_storage:'denied', ad_user_data:'denied', ad_personalization:'denied', analytics_storage:'denied', wait_for_update:500}});
+  try {{ var c = localStorage.getItem('jolt-consent'); if (c === 'granted') gtag('consent', 'update', {{analytics_storage:'granted', ad_storage:'granted', ad_user_data:'granted', ad_personalization:'granted'}}); }} catch (e) {{}}
+  gtag('js', new Date());
+</script>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-W3RCSHQW"></script>
 <script type="application/ld+json">{json.dumps(ld_org)}</script><script type="application/ld+json">{json.dumps(ld_faq)}</script>
 </head>
 <body>'''
@@ -172,6 +180,7 @@ FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
 </div><div class="wrap legal muted">© 2026 Jolt Ireland Technology Ltd. All rights reserved. · <a href="{PRIVACY}">Privacy</a></div></footer>
 <a class="wa-float" href="https://wa.me/{WHATSAPP}?text=Hi%2C%20I%27d%20like%20a%20Jolt%20station%20for%20my%20venue" aria-label="Message Jolt on WhatsApp"><svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.7 8.7 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8.9 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
+<div class="cookie-bar" id="cookie-bar" hidden role="region" aria-label="Cookie consent"><p>We use cookies to understand how the site is used and improve it. You can accept or reject analytics cookies.</p><div class="cookie-btns"><button type="button" class="btn btn-ghost sm" data-consent="denied">Reject</button><button type="button" class="btn btn-green sm" data-consent="granted">Accept</button></div></div>
 <div class="app-modal" id="app-modal" hidden><div class="app-modal-card" role="dialog" aria-modal="true" aria-labelledby="app-modal-h"><button type="button" class="app-modal-x" aria-label="Close">×</button><h3 id="app-modal-h">Get the Jolt app</h3><p>Find stations near you, rent a power bank and return it anywhere.</p><div class="app-modal-btns"><a class="btn btn-green" href="{IOS_URL}" target="_blank" rel="noopener">App Store (iPhone)</a><a class="btn btn-ghost" href="{ANDROID_URL}" target="_blank" rel="noopener">Google Play (Android)</a></div></div></div>
 <script>window.JOLT_APP={{ios:"{IOS_URL}",android:"{ANDROID_URL}"}};</script>
 <script src="/assets/site.js?v={JS_V}" defer></script>

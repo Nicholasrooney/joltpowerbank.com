@@ -400,3 +400,26 @@ const WHATSAPP = "353870365888";
     });
   });
 })();
+
+/* ---------- Cookie consent (Consent Mode v2) ---------- */
+(function () {
+  const bar = document.getElementById("cookie-bar"); if (!bar) return;
+  let saved = null; try { saved = localStorage.getItem("jolt-consent"); } catch (_) {}
+  if (!saved) bar.hidden = false;
+  bar.querySelectorAll("[data-consent]").forEach(b => b.addEventListener("click", () => {
+    const v = b.dataset.consent;
+    try { localStorage.setItem("jolt-consent", v); } catch (_) {}
+    if (window.gtag) gtag("consent", "update", { analytics_storage: v, ad_storage: v, ad_user_data: v, ad_personalization: v });
+    (window.dataLayer = window.dataLayer || []).push({ event: "consent_" + v });
+    bar.hidden = true;
+  }));
+})();
+
+/* ---------- Mirror key events as plain dataLayer events so GTM triggers can use them ---------- */
+(function () {
+  const orig = window.gtag; if (!orig) return;
+  window.gtag = function (type, name, params) {
+    orig.apply(this, arguments);
+    if (type === "event") (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, params || {}));
+  };
+})();
