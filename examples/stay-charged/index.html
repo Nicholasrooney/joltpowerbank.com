@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Stay Charged | Jolt example</title>
+<link rel="icon" href="/assets/brand/jolt-logo-black.svg">
+<style>
+@font-face{font-family:Inter;font-weight:400;src:url(/assets/fonts/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:Inter;font-weight:600;src:url(/assets/fonts/inter-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Plus Jakarta Sans';font-weight:400;font-display:swap;src:url(/assets/fonts/ex/plus-jakarta-sans-latin-400-normal.woff2) format('woff2')}@font-face{font-family:'Plus Jakarta Sans';font-weight:500;font-display:swap;src:url(/assets/fonts/ex/plus-jakarta-sans-latin-500-normal.woff2) format('woff2')}@font-face{font-family:'Plus Jakarta Sans';font-weight:700;font-display:swap;src:url(/assets/fonts/ex/plus-jakarta-sans-latin-700-normal.woff2) format('woff2')}
+*{box-sizing:border-box}html{scroll-behavior:smooth;overflow-x:hidden}body{margin:0;-webkit-font-smoothing:antialiased;overflow-x:hidden}img{max-width:100%;display:block}a{color:inherit}
+.wrap{width:min(1180px,92vw);margin:0 auto}
+
+.exbar{position:relative;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.45rem 1rem;background:#050505;color:#cfd8cf;font:500 12px/1.2 Inter,system-ui,sans-serif;letter-spacing:.02em;border-bottom:1px solid #1d231d}
+.exbar a{color:#9ef230;text-decoration:none}
+.exbar select{background:#111511;color:#fff;border:1px solid #2c352c;border-radius:8px;padding:.35rem .5rem;font:inherit;max-width:60vw}
+
+.mq{overflow:hidden;width:100%;min-width:0;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq-track{display:flex;gap:1.2rem;width:max-content;animation:mqr var(--mqs,45s) linear infinite}
+.mq:hover .mq-track{animation-play-state:paused}
+@keyframes mqr{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.mql{flex:none;width:140px;height:72px;display:flex;align-items:center;justify-content:center;padding:8px}
+.mql img{max-height:52px;max-width:118px;object-fit:contain}
+.mq-tile .mql{background:#fff;border:1px solid #e6ece7;border-radius:12px}
+.mq-grey .mql img{filter:grayscale(1);opacity:.8}
+[hidden]{display:none!important}
+img[src*="/assets/stations/"]:not(.nb){mix-blend-mode:multiply}
+
+body{font-family:'Plus Jakarta Sans',sans-serif;color:#fff;background:#08090a}
+.top{position:relative;overflow:hidden;background:radial-gradient(ellipse 60% 50% at 70% 55%,rgba(158,242,48,.10),transparent 70%),#08090a}
+.nav .wrap{display:flex;align-items:center;gap:2.6rem;height:100px}.nav .lg{height:44px;width:auto}
+.nav nav{display:flex;gap:2.4rem;font-weight:600;font-size:1rem;margin-left:2rem}.nav nav a{text-decoration:none;color:#f1f1f1}.nav nav a:hover{color:#9ef230}
+.nav .rt{margin-left:auto;display:flex;gap:1rem}
+.pl{display:inline-flex;align-items:center;gap:.6rem;border-radius:40px;padding:.85rem 1.5rem;font-weight:600;font-size:1rem;text-decoration:none;white-space:nowrap}
+.pl-o{border:1.5px solid #e9e9e9;color:#fff}.pl-o:hover{border-color:#9ef230;color:#9ef230}.pl-g{background:#9ef230;color:#0a0f05}.pl-g:hover{filter:brightness(1.08)}
+.hero{position:relative;overflow:hidden}.hero .wrap{display:grid;grid-template-columns:1.12fr .88fr;align-items:center;min-height:620px;padding:2rem 0 4rem}
+.ey{display:flex;align-items:center;gap:1.6rem;font:600 1rem/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.22em;color:#eee}.ey:after{content:"";width:52px;height:2px;background:#9ef230}
+.hero h1{white-space:nowrap;font-size:clamp(2.3rem,5.4vw,4.4rem);line-height:1.06;margin:2.2rem 0 1.6rem;font-weight:700;letter-spacing:-.025em}.hero h1 span{color:#9ef230}
+.hero p{font-size:1.45rem;line-height:1.4;color:#eaeaea;max-width:26rem;margin:0 0 2.6rem;font-weight:400}
+.hero .btns{display:flex;gap:1.2rem;flex-wrap:wrap}.hero .pl{padding:1.15rem 2.2rem;font-size:1.15rem}
+.art{position:relative;height:600px}
+.arc{position:absolute;left:-440px;top:150px;width:2880px;height:2800px;border-radius:50%;border:4px solid transparent;border-top-color:#9ef230;filter:drop-shadow(0 0 8px rgba(158,242,48,1)) drop-shadow(0 0 30px rgba(158,242,48,.7));-webkit-mask:linear-gradient(90deg,transparent 0,#000 12%);mask:linear-gradient(90deg,transparent 0,#000 12%)}
+.arc:after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse 30% 4% at 50% 0%,rgba(158,242,48,.18),transparent)}
+.glow{position:absolute;left:12%;right:-6%;bottom:40px;height:90px;border-radius:50%;background:radial-gradient(ellipse,rgba(158,242,48,.35),transparent 70%);filter:blur(10px)}
+.art img{position:absolute;right:2%;bottom:56px;height:520px;width:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.6))}
+.art .refl{bottom:-410px;height:520px;transform:scaleY(-1);opacity:.12;filter:blur(2px);-webkit-mask:linear-gradient(0deg,transparent 60%,#000);mask:linear-gradient(0deg,transparent 60%,#000)}
+.four{padding:3rem 0 4.5rem}.four .wrap{display:grid;grid-template-columns:repeat(4,1fr)}
+.four a{text-decoration:none;text-align:center;padding:0 1.4rem;border-left:1px solid #2b2e2b}.four a:first-child{border-left:0}
+.four .ic{color:#9ef230;display:flex;justify-content:center;margin-bottom:1rem}.four h3{font-size:1.75rem;margin:0 0 .7rem;font-weight:700}.four p{margin:0;color:#e2e2e2;font-size:1.1rem;line-height:1.45}
+.four a:hover h3{color:#9ef230}
+.brands{padding:0 0 3rem}.brands .mql{background:#fff;border:0}
+footer{border-top:1px solid #2b2e2b;width:min(1180px,92vw);margin:0 auto;padding:2.6rem 0 4rem;display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap}
+footer .lg{height:42px;width:auto;padding-right:2rem;border-right:2px solid #3a3d3a}
+footer nav{display:flex;gap:0;flex-wrap:wrap}footer nav a{color:#eee;text-decoration:none;font-size:.95rem;padding:0 1.6rem;border-left:1px solid #3a3d3a}footer nav a:first-child{border-left:0}footer nav a:hover{color:#9ef230}
+footer .so{margin-left:auto;display:flex;gap:1.6rem}footer .so a{color:#fff}footer .so a:hover{color:#9ef230}
+@media(max-width:1100px){.nav nav{display:none}}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr;min-height:0}.art{height:430px}.art img{height:380px;right:50%;transform:translateX(50%)}.art .refl{display:none}.four .wrap{grid-template-columns:1fr 1fr;row-gap:2.4rem}.four a:nth-child(3){border-left:0}.nav .pl-o{display:none}footer nav a{padding:.3rem .9rem}footer .so{margin-left:0}}
+@media(max-width:520px){.ey{font-size:.78rem;letter-spacing:.14em;gap:.8rem}.arc{top:120px}.nav .wrap{gap:1rem}.nav .lg{height:34px}.pl{padding:.7rem 1.1rem;font-size:.9rem}.hero p{font-size:1.2rem}.four .wrap{grid-template-columns:1fr}.four a{border-left:0;border-top:1px solid #2b2e2b;padding-top:1.6rem}.four a:first-child{border-top:0}}
+
+</style></head><body>
+<div class="exbar"><span>Jolt website example · <a href="/">back to main site</a></span><select aria-label="Switch example" onchange="location.href=this.value"><option value="/examples/blue-wave/">1 · Gradient hero (layout: chargeFUZE)</option><option value="/examples/bold-colour/">2 · Bold colour block (layout: Joos Power)</option><option value="/examples/clean-navy/">3 · Clean navy (layout: ChargedUp)</option><option value="/examples/pill-play/">4 · Rounded &amp; playful (layout: Naki)</option><option value="/examples/fresh-green/">5 · Fresh &amp; friendly (layout: ChargerGoGo)</option><option value="/examples/night-out/">6 · Night-out energy (layout: Chimpy)</option><option value="/examples/city-lights/">7 · Dark cinematic (layout: ChargeSPOT)</option><option value="/examples/neon-dark/">8 · Black &amp; neon (layout: voozaa)</option><option value="/examples/first-draft/">9 · First draft (layout: Jolt's previous homepage)</option><option value="/examples/stay-charged/" selected>10 · Stay Charged (layout: your mockup)</option></select></div>
+
+<div class="top">
+<header class="nav"><div class="wrap"><a href="/"><img class="lg" src="/assets/brand/jolt-logo-white.svg" alt="Jolt"></a>
+<nav><a href="/#how">For Users</a><a href="/get-a-free-station/">For Venues</a><a href="#four">Advertising</a><a href="https://wa.me/353870365888">Customer Support</a></nav>
+<div class="rt"><a class="pl pl-o" data-app href="#"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Find a Jolt</a><a class="pl pl-g" data-app href="#">Download App</a></div></div></header>
+<section class="hero"><div class="wrap">
+<div><span class="ey">SHARED POWER BANK NETWORK</span><h1>Stay Charged.<br>Stay <span>Connected.</span></h1><p>Rent a power bank in seconds and keep your world moving.</p>
+<div class="btns"><a class="pl pl-g" data-app href="#"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>Download App</a><a class="pl pl-o" data-app href="#"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Find a Jolt</a></div></div>
+<div class="art"><div class="arc"></div><div class="glow"></div><img class="nb" src="/assets/stations/countertop-8-black-angle-cut.webp" alt="Jolt Countertop 8 station"><img class="nb refl" src="/assets/stations/countertop-8-black-angle-cut.webp" alt=""></div>
+</div></section>
+<section class="four" id="four"><div class="wrap"><a href="/#how"><div class="ic"><svg viewBox="0 0 48 48" width="54" height="54" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="14" y="4" width="20" height="40" rx="4"/><path d="M22 38h4"/></svg></div><h3>For Users</h3><p>Rent, charge and go</p></a><a href="/get-a-free-station/"><div class="ic"><svg viewBox="0 0 48 48" width="54" height="54" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 18l4-10h28l4 10"/><path d="M6 18c0 3 2.5 5 5.5 5s5.5-2 5.5-5c0 3 2.5 5 5.5 5h1c3 0 5.5-2 5.5-5 0 3 2.5 5 5.5 5S42 21 42 18"/><path d="M9 23v17h30V23"/><path d="M20 40V30h8v10"/></svg></div><h3>For Venues</h3><p>Add value to<br>your space</p></a><a href="https://wa.me/353870365888?text=Hi%2C%20I%27m%20interested%20in%20advertising%20on%20Jolt%20stations"><div class="ic"><svg viewBox="0 0 48 48" width="54" height="54" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="6" width="40" height="28" rx="2"/><path d="M20 14l10 6-10 6z"/><path d="M24 34v6M16 42h16"/></svg></div><h3>Advertising</h3><p>Reach real people<br>at high-traffic venues</p></a><a href="https://wa.me/353870365888"><div class="ic"><svg viewBox="0 0 48 48" width="54" height="54" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M8 28v-4a16 16 0 0 1 32 0v4"/><rect x="5" y="26" width="8" height="12" rx="3"/><rect x="35" y="26" width="8" height="12" rx="3"/><path d="M39 38c0 4-4 6-10 6h-3"/></svg></div><h3>Customer Support</h3><p>Help and enquiries</p></a></div></section>
+<section class="brands"><div class="mq mq-tile" style="--mqs:50s"><div class="mq-track"><div class="mql"><img src="/assets/venues/rds.webp" alt=""></div><div class="mql"><img src="/assets/venues/tesco-express-temple-bar.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-george.webp" alt=""></div><div class="mql"><img src="/assets/venues/whelan-s.webp" alt=""></div><div class="mql"><img src="/assets/venues/temple-bar-hotel-dublin.webp" alt=""></div><div class="mql"><img src="/assets/venues/o-donoghues-bar-dublin.webp" alt=""></div><div class="mql"><img src="/assets/venues/st-vincent-s-university-hospital.webp" alt=""></div><div class="mql"><img src="/assets/venues/copper-face-jacks.webp" alt=""></div><div class="mql"><img src="/assets/venues/jameson-distillery-bow-st.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-workman-s-club.webp" alt=""></div><div class="mql"><img src="/assets/venues/clayton-hotel-ballsbridge.webp" alt=""></div><div class="mql"><img src="/assets/venues/slattery-s.webp" alt=""></div><div class="mql"><img src="/assets/venues/caf-en-seine.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-harbour-bar.webp" alt=""></div><div class="mql"><img src="/assets/venues/harcourt-hotel.webp" alt=""></div><div class="mql"><img src="/assets/venues/pawn-shop.webp" alt=""></div><div class="mql"><img src="/assets/venues/rds.webp" alt=""></div><div class="mql"><img src="/assets/venues/tesco-express-temple-bar.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-george.webp" alt=""></div><div class="mql"><img src="/assets/venues/whelan-s.webp" alt=""></div><div class="mql"><img src="/assets/venues/temple-bar-hotel-dublin.webp" alt=""></div><div class="mql"><img src="/assets/venues/o-donoghues-bar-dublin.webp" alt=""></div><div class="mql"><img src="/assets/venues/st-vincent-s-university-hospital.webp" alt=""></div><div class="mql"><img src="/assets/venues/copper-face-jacks.webp" alt=""></div><div class="mql"><img src="/assets/venues/jameson-distillery-bow-st.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-workman-s-club.webp" alt=""></div><div class="mql"><img src="/assets/venues/clayton-hotel-ballsbridge.webp" alt=""></div><div class="mql"><img src="/assets/venues/slattery-s.webp" alt=""></div><div class="mql"><img src="/assets/venues/caf-en-seine.webp" alt=""></div><div class="mql"><img src="/assets/venues/the-harbour-bar.webp" alt=""></div><div class="mql"><img src="/assets/venues/harcourt-hotel.webp" alt=""></div><div class="mql"><img src="/assets/venues/pawn-shop.webp" alt=""></div></div></div></section>
+</div>
+<footer><img class="lg" src="/assets/brand/jolt-logo-white.svg" alt="Jolt"><nav><a href="/privacy/">Legal</a><a href="/privacy/">Terms &amp; Conditions</a><a href="/privacy/">Privacy Policy</a><a href="/#faq">FAQs</a><a href="/privacy/">Refunds</a><a href="https://wa.me/353870365888">Contact Us</a></nav>
+<div class="so"><a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a><a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M4 9h3.5v11H4zM5.75 3.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4zM10 9h3.4v1.6h.05c.47-.9 1.6-1.85 3.3-1.85 3.55 0 4.2 2.3 4.2 5.35V20h-3.5v-5.2c0-1.25 0-2.85-1.75-2.85s-2 1.35-2 2.75V20H10z"/></svg></a><a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M22 8.2a3 3 0 0 0-2.1-2.1C18 5.6 12 5.6 12 5.6s-6 0-7.9.5A3 3 0 0 0 2 8.2 31 31 0 0 0 1.6 12 31 31 0 0 0 2 15.8a3 3 0 0 0 2.1 2.1c1.9.5 7.9.5 7.9.5s6 0 7.9-.5a3 3 0 0 0 2.1-2.1c.3-1.2.4-2.5.4-3.8s-.1-2.6-.4-3.8zM10 15.1V8.9l5.2 3.1z"/></svg></a></div></footer>
+<script>
+// "Find a power bank" buttons open the right app store
+document.querySelectorAll('[data-app]').forEach(a=>{const ua=navigator.userAgent;a.href=/android/i.test(ua)?'https://play.google.com/store/apps/details?id=com.joltireland.charge':'https://apps.apple.com/ie/app/joltireland/id6471393616';a.target='_blank';a.rel='noopener'});
+</script>
+</body></html>
