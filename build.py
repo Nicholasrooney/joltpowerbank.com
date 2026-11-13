@@ -169,14 +169,14 @@ import examples as EX
 NAV = f'''<header class="nav"><div class="wrap nav-in">
 {LOGO}
 <nav class="links"><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a></nav>
-<div class="nav-cta">{EX.nav_dropdown()}<a class="btn btn-green sm" href="/#setup-card">Get a free station</a><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button></div>
+<div class="nav-cta">{EX.nav_dropdown()}<a class="btn btn-green sm" href="/get-a-free-station/">Get a free station</a><button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button></div>
 </div>
 <nav class="mobile-menu" id="mobile-menu" hidden><a href="/">Home</a><a href="/stations/">Stations</a><a href="/customers/">Customers</a><a href="/areas/">Areas</a><a href="/#how">How it works</a><a href="/#venues">Venues</a><a href="/#faq">FAQ</a><a class="app-link" href="{APP_URL}">Find a power bank</a>{EX.mobile_links()}</nav>
 </header>'''
 
 FOOTER = f'''<footer class="foot"><div class="wrap foot-in">
 <div>{LOGO}<p class="muted">Power bank rental stations for venues across Ireland and the UK.</p></div>
-<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/areas/dublin/">Dublin</a><a href="/areas/london/">London</a><a href="/areas/belfast/">Belfast</a><a href="/areas/cork/">Cork</a><a href="/areas/">All areas</a><a href="/#setup-card">EU &amp; international waitlist</a></div>
+<div><h4>Venues</h4><a href="/ie/">Ireland</a><a href="/uk/">United Kingdom</a><a href="/areas/dublin/">Dublin</a><a href="/areas/london/">London</a><a href="/areas/belfast/">Belfast</a><a href="/areas/cork/">Cork</a><a href="/areas/">All areas</a><a href="/get-a-free-station/">EU &amp; international waitlist</a></div>
 <div><h4>Stations</h4><a href="/stations/">All stations</a><a href="/customers/">Our customers</a><a href="/stations/countertop-12/">Countertop</a><a href="/stations/slim-kiosk-24/">Floor-standing</a></div>
 <div><h4>Customers</h4><a class="app-link" href="{APP_URL}">Download the app</a><a href="https://wa.me/{WHATSAPP}">WhatsApp support</a></div>
 <div><h4>Contact</h4><a href="https://wa.me/{WHATSAPP}">{WHATSAPP_DISPLAY}</a></div>
@@ -342,7 +342,7 @@ def stations_index():
 <h1 class="page-h1">Our stations</h1>
 <p class="lead">From an 8-bank unit that sits beside the till to a 48-bank tower for festivals. Pick one, or tell us about your venue and we'll recommend the right fit.</p>
 {groups}
-<div class="panel st-help"><div><h3>Not sure which one fits?</h3><p>Answer four quick questions and we'll recommend a station for your venue.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+<div class="panel st-help"><div><h3>Not sure which one fits?</h3><p>Answer four quick questions and we'll recommend a station for your venue.</p></div><a class="btn btn-green" href="/get-a-free-station/">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
 def station_page(x):
@@ -372,7 +372,7 @@ def station_page(x):
 <h2 class="specs-h">Specifications</h2>
 <table class="specs">{specs}</table>
 <p class="specs-src">Measurements from Jolt's product sheet. Cost to your venue: free, including installation and maintenance.</p>
-<div class="hero-ctas"><a class="btn btn-green" href="/?station={x["slug"]}#setup-card">Request this station</a><a class="btn btn-ghost" href="https://wa.me/{WHATSAPP}?text={html.escape("Hi, I'm interested in the Jolt " + x["name"] + " for my venue").replace(" ", "%20")}">Ask on WhatsApp</a></div>
+<div class="hero-ctas"><a class="btn btn-green" href="/get-a-free-station/?station={x["slug"]}">Request this station</a><a class="btn btn-ghost" href="https://wa.me/{WHATSAPP}?text={html.escape("Hi, I'm interested in the Jolt " + x["name"] + " for my venue").replace(" ", "%20")}">Ask on WhatsApp</a></div>
 <ul class="ticks"><li>Installed free</li><li>We keep it stocked and maintained</li><li>You earn a share of every rental</li></ul>
 </div></div>
 </div></section>
@@ -408,7 +408,7 @@ def customers_page():
 {data}
 {blocks}
 <section class="cust-dir" id="directory"><h2>A selection of our venues, by type</h2>{directory}</section>
-<div class="panel st-help"><div><h3>Want your venue on this list?</h3><p>Stations are installed free, and you earn a share of every rental.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+<div class="panel st-help"><div><h3>Want your venue on this list?</h3><p>Stations are installed free, and you earn a share of every rental.</p></div><a class="btn btn-green" href="/get-a-free-station/">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
 # Area landing pages (local SEO). Copy only describes what the app map shows; add real local venues when Jolt confirms them.
@@ -526,7 +526,7 @@ def areas_index():
 <h1 class="page-h1">Jolt near you</h1>
 <p class="lead">Jolt is live across Ireland and the UK. Pick your area to see the network there and get a free station for your venue.</p>
 <div class="st-grid">{cards}</div>
-<div class="panel st-help"><div><h3>Don't see your area?</h3><p>We're expanding fast. Tell us about your venue and we'll let you know when we can install.</p></div><a class="btn btn-green" href="/#setup-card">See your free setup</a></div>
+<div class="panel st-help"><div><h3>Don't see your area?</h3><p>We're expanding fast. Tell us about your venue and we'll let you know when we can install.</p></div><a class="btn btn-green" href="/get-a-free-station/">See your free setup</a></div>
 </div></section></main>""" + FOOTER
 
 def privacy_page():
@@ -574,7 +574,15 @@ def write(path, content):
     with open(full, "w", encoding="utf-8") as f:
         f.write(content)
 
-write("index.html", page(None))
+import light
+MINT_V = _v("assets/mint.css")
+LCTX = {"STATIONS": STATIONS, "FAQ": FAQ, "EX": EX, "APP_URL": APP_URL, "head": head, "FOOTER": FOOTER, "MINT_V": MINT_V, "setup_card": setup_card}
+write("index.html", light.home(LCTX))                       # homepage = Fresh & friendly layout (mint theme)
+write("get-a-free-station/index.html", light.form_page(LCTX))  # the quote form on its own page
+_old = page(None)                                           # previous dark homepage -> example 9 "First draft"
+_old = _old.replace('<link rel="canonical"', '<meta name="robots" content="noindex, nofollow"><link rel="canonical"', 1)
+_old = _old.replace("<body>", "<body><style>" + EX.EXBAR_CSS + "</style>" + EX.exbar("first-draft"), 1)
+write("examples/first-draft/index.html", _old)
 write("ie/index.html", page("ie"))
 write("uk/index.html", page("uk"))
 write("thank-you/index.html", thanks_page())
@@ -597,7 +605,7 @@ for k in (None, "ie", "uk"):
     for a in ("ie", "uk"):
         sm += f'<xhtml:link rel="alternate" hreflang="{PAGES[a]["lang"].lower()}" href="{DOMAIN}{PAGES[a]["path"]}"/>'
     sm += f'<xhtml:link rel="alternate" hreflang="x-default" href="{DOMAIN}/"/></url>\n'
-for u in ["/stations/", "/customers/", "/areas/", "/privacy/"] + [f"/areas/{a['slug']}/" for a in AREAS] + [f"/stations/{x['slug']}/" for x in STATIONS]:
+for u in ["/get-a-free-station/", "/stations/", "/customers/", "/areas/", "/privacy/"] + [f"/areas/{a['slug']}/" for a in AREAS] + [f"/stations/{x['slug']}/" for x in STATIONS]:
     sm += f"<url><loc>{DOMAIN}{u}</loc></url>\n"
 write("sitemap.xml", sm + "</urlset>\n")
 print("built", OUT)

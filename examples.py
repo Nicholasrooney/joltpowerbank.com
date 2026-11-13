@@ -5,7 +5,7 @@ import html
 
 LIME, GREEN = "#9ef230", "#009245"          # from Jolt's logo colour guide
 LOGO_W, LOGO_B = "/assets/brand/jolt-logo-white.svg", "/assets/brand/jolt-logo-black.svg"
-FORM = "/#setup-card"                        # the real quote form on the main site
+FORM = "/get-a-free-station/"                        # the real quote form on the main site
 
 EXAMPLES = [  # slug, label shown in the dropdown, layout reference
     ("blue-wave",    "1 · Gradient hero",      "chargeFUZE"),
@@ -16,6 +16,7 @@ EXAMPLES = [  # slug, label shown in the dropdown, layout reference
     ("night-out",    "6 · Night-out energy",   "Chimpy"),
     ("city-lights",  "7 · Dark cinematic",     "ChargeSPOT"),
     ("neon-dark",    "8 · Black & neon",       "voozaa"),
+    ("first-draft",  "9 · First draft",        "Jolt's previous homepage"),
 ]
 
 VENUE_LOGOS = ["rds", "tesco-express-temple-bar", "the-george", "whelan-s", "temple-bar-hotel-dublin", "o-donoghues-bar-dublin",
@@ -484,8 +485,9 @@ BUILDERS = {"blue-wave": ex_blue_wave, "bold-colour": ex_bold_colour, "clean-nav
 
 def build(write, stations, ios, android):
     for slug, _, _ in EXAMPLES:
+        if slug not in BUILDERS: continue      # "first-draft" is written by build.py (it is the old homepage)
         write(f"examples/{slug}/index.html", BUILDERS[slug](stations).replace("{IOS}", ios).replace("{AND}", android))
-    links = "".join(f'<a href="/examples/{s}/"><b>{html.escape(l)}</b><span>Layout based on {r}</span></a>' for s, l, r in EXAMPLES)
+    links = "".join(f'<a href="/examples/{s}/"><b>{html.escape(l)}</b><span>{"Layout based on " + r if s != "first-draft" else r}</span></a>' for s, l, r in EXAMPLES)
     write("examples/index.html", page("", "All examples", [], """body{font-family:Inter,sans-serif;background:#060806;color:#fff}.wrap{padding:4rem 0}h1{font-size:2.4rem}
 .l{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}.l a{display:block;border:1px solid #1f261f;border-radius:14px;padding:1.4rem;text-decoration:none;background:#0c100c}.l a:hover{border-color:#9ef230}.l b{display:block;font-size:1.1rem}.l span{color:#8a948a;font-size:.85rem}""",
                                      f'<div class="wrap"><img src="{LOGO_W}" alt="Jolt" style="height:30px"><h1>Website examples</h1><div class="l">{links}</div></div>'))
