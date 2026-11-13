@@ -13,6 +13,14 @@
 .exbar a{color:#9ef230;text-decoration:none}
 .exbar select{background:#111511;color:#fff;border:1px solid #2c352c;border-radius:8px;padding:.35rem .5rem;font:inherit;max-width:60vw}
 
+.mq{overflow:hidden;width:100%;min-width:0;-webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.mq-track{display:flex;gap:1.2rem;width:max-content;animation:mqr var(--mqs,45s) linear infinite}
+.mq:hover .mq-track{animation-play-state:paused}
+@keyframes mqr{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.mql{flex:none;width:140px;height:72px;display:flex;align-items:center;justify-content:center;padding:8px}
+.mql img{max-height:52px;max-width:118px;object-fit:contain}
+.mq-tile .mql{background:#fff;border:1px solid #e6ece7;border-radius:12px}
+.mq-grey .mql img{filter:grayscale(1);opacity:.8}
 [hidden]{display:none!important}
 img[src*="/assets/stations/"]:not(.nb){mix-blend-mode:multiply}
 body{font-family:Inter,sans-serif;background:#060806;color:#fff}.wrap{padding:4rem 0}h1{font-size:2.4rem}
